@@ -38,3 +38,10 @@ body {
     transition: none !important;
   }
 }
+
+@media (hover: hover) and (pointer: fine) {
+  html.gavel-cursor-active,
+  html.gavel-cursor-active * {
+    cursor: none !important;
+  }
+}

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Playfair_Display, Plus_Jakarta_Sans } from 'next/font/google';
 import { Toaster } from 'sonner';
+import { CustomGavelCursor } from '@/components/public/CustomGavelCursor';
 import { FloatingWhatsAppButton } from '@/components/public/FloatingWhatsAppButton';
 import './globals.css';
 
@@ -121,6 +122,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(legalServiceSchema) }}
         />
         {children}
+        <CustomGavelCursor />
         <FloatingWhatsAppButton />
         <Toaster position="top-right" richColors closeButton />
       </body>
