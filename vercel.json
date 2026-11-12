@@ -3,11 +3,14 @@
   "services": {
     "frontend": {
       "root": "frontend",
-      "bindings": {
-        "BACKEND_INTERNAL_URL": {
-          "service": "backend"
+      "bindings": [
+        {
+          "type": "service",
+          "service": "backend",
+          "format": "url",
+          "env": "BACKEND_INTERNAL_URL"
         }
-      }
+      ]
     },
     "backend": {
       "root": "backend",
@@ -19,15 +22,13 @@
     {
       "source": "/api/(.*)",
       "destination": {
-        "service": "backend",
-        "path": "/api/$1"
+        "service": "backend"
       }
     },
     {
       "source": "/(.*)",
       "destination": {
-        "service": "frontend",
-        "path": "/$1"
+        "service": "frontend"
       }
     }
   ]
