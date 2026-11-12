@@ -105,6 +105,43 @@ export const updateSettingsSchema = z.object({
   whatsappDispatchEnabled: z.boolean().optional(),
 });
 
+import { ARTICLE_CATEGORIES } from '../models/Article';
+
+export const createInquirySchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters').max(120),
+  phone: z
+    .string()
+    .regex(/^[+\d][\d\s-]{5,24}$/, 'Please enter a valid phone number'),
+  email: z
+    .union([z.string().email('Please enter a valid email address'), z.literal('')])
+    .optional()
+    .default(''),
+  subject: z.string().max(200).optional().default('General Legal Consultation Inquiry'),
+  message: z.string().min(10, 'Message must be at least 10 characters').max(3000),
+});
+
+export const updateInquiryStatusSchema = z.object({
+  status: z.enum(['New', 'Reviewed', 'Responded']),
+});
+
+export const articleSchema = z.object({
+  title: z.string().min(5, 'Title must be at least 5 characters').max(200),
+  slug: z
+    .string()
+    .min(3)
+    .max(180)
+    .regex(/^[a-z0-9-]+$/, 'Slug can only contain lowercase letters, numbers, and hyphens')
+    .optional(),
+  category: z.enum(ARTICLE_CATEGORIES),
+  summary: z.string().min(10, 'Summary is required').max(600),
+  content: z.string().min(20, 'Article content is required').max(25000),
+  statutoryReference: z.string().max(400).optional().default(''),
+  authorName: z.string().max(120).optional().default('Hossain Ahmed (Khan)'),
+  isPublished: z.boolean().optional().default(false),
+});
+
+export const updateArticleSchema = articleSchema.partial();
+
 export const updateContentSchema = z.object({
   brandName: z.string().min(2).max(120).optional(),
   brandTagline: z.string().min(2).max(250).optional(),

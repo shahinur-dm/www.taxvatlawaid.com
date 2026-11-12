@@ -1,160 +1,412 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { Calendar, Mail, MapPin, Menu, MessageCircle, Phone, X } from 'lucide-react';
-import { PublicSettings, WebsiteContentData } from '@/types';
+import { usePathname } from 'next/navigation';
+import {
+  ArrowRight,
+  Calendar,
+  ChevronDown,
+  Mail,
+  MapPin,
+  Menu,
+  MessageCircle,
+  Phone,
+  X,
+} from 'lucide-react';
+import { FALLBACK_SERVICES } from '@/lib/defaults';
+import { PublicSettings, ServiceItem, WebsiteContentData } from '@/types';
 import { AnnouncementBanner } from './AnnouncementBanner';
 
 interface SiteHeaderProps {
   content: WebsiteContentData;
   settings: PublicSettings;
+  services?: ServiceItem[];
+  transparentOverHero?: boolean;
 }
 
-export function SiteHeader({ content, settings }: SiteHeaderProps) {
+export function SiteHeader({
+  content,
+  settings,
+  services,
+  transparentOverHero = false,
+}: SiteHeaderProps) {
+  const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobilePracticeOpen, setMobilePracticeOpen] = useState(false);
+  const [practiceMenuOpen, setPracticeMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const dropdownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const navLinks = [
-    { label: 'Practice Areas', href: '/#practice-areas' },
-    { label: 'Services', href: '/services' },
-    { label: 'About & Process', href: '/about' },
-    { label: 'FAQ', href: '/#faq' },
-    { label: 'Contact', href: '/contact' },
-  ];
+  const divisions = services && services.length > 0 ? services : FALLBACK_SERVICES;
+
+  useEffect(() => {
+    const onScroll = () => {
+      setScrolled(window.scrollY > 32);
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  useEffect(() => {
+    setMobileOpen(false);
+    setPracticeMenuOpen(false);
+  }, [pathname]);
+
+  const isTransparent = transparentOverHero && !scrolled;
 
   const whatsappDigits = content.contactWhatsapp.replace(/\D/g, '');
   const whatsappUrl = `https://wa.me/${whatsappDigits.startsWith('88') ? whatsappDigits : `88${whatsappDigits}`}`;
 
+  const openDropdown = () => {
+    if (dropdownTimerRef.current) clearTimeout(dropdownTimerRef.current);
+    setPracticeMenuOpen(true);
+  };
+
+  const closeDropdown = () => {
+    dropdownTimerRef.current = setTimeout(() => {
+      setPracticeMenuOpen(false);
+    }, 150);
+  };
+
+  const navLinkClass = (active: boolean) =>
+    `relative text-[13px] font-medium tracking-wide transition-colors py-1 whitespace-nowrap ${
+      isTransparent
+        ? active
+          ? 'text-champagne-300'
+          : 'text-ivory-100/90 hover:text-white'
+        : active
+          ? 'text-midnight-900 font-semibold'
+          : 'text-charcoal-600 hover:text-midnight-900'
+    }`;
+
   return (
-    <header className="sticky top-0 z-40 w-full shadow-sm">
+    <header
+      className={`${
+        transparentOverHero ? 'fixed top-0 inset-x-0' : 'sticky top-0'
+      } z-50 w-full transition-all duration-300`}
+    >
       <AnnouncementBanner
         enabled={settings.announcementEnabled}
         text={settings.announcementText}
       />
 
-      {/* Top Navy Contact Bar */}
-      <div className="bg-navy-800 text-white text-xs border-b border-navy-700/60">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5">
-          <div className="flex items-center gap-1.5 text-slate-200 truncate">
-            <MapPin className="h-3.5 w-3.5 text-lime-400 shrink-0" />
+      {/* Refined Chamber Contact Strip */}
+      <div
+        className={`transition-colors duration-300 border-b text-[11.5px] ${
+          isTransparent
+            ? 'bg-midnight-950/70 backdrop-blur-md border-white/10 text-ivory-200'
+            : 'bg-midnight-900 border-midnight-800 text-ivory-200'
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-1.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+          <div className="flex items-center gap-2 truncate text-ivory-200/90">
+            <MapPin className="h-3.5 w-3.5 text-champagne-400 shrink-0" />
             <span className="truncate">{content.officeAddress}</span>
           </div>
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-slate-200 shrink-0">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 shrink-0">
             <a
               href={`tel:${content.contactPhone}`}
-              className="inline-flex items-center gap-1.5 hover:text-white transition-colors"
+              className="inline-flex items-center gap-1.5 hover:text-champagne-300 transition-colors"
             >
-              <Phone className="h-3.5 w-3.5 text-lime-400" />
+              <Phone className="h-3 w-3 text-champagne-400" />
               <span>{content.contactPhone}</span>
             </a>
-            <span className="text-slate-500 hidden sm:inline">|</span>
+            <span className="text-white/20 hidden sm:inline">|</span>
             <a
               href={whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 hover:text-white transition-colors"
+              className="inline-flex items-center gap-1.5 hover:text-champagne-300 transition-colors"
             >
-              <MessageCircle className="h-3.5 w-3.5 text-brandGreen-500" />
+              <MessageCircle className="h-3 w-3 text-emerald-400" />
               <span>{content.contactWhatsapp}</span>
             </a>
-            <span className="text-slate-500 hidden sm:inline">|</span>
+            <span className="text-white/20 hidden sm:inline">|</span>
             <a
               href={`mailto:${content.contactEmail}`}
-              className="inline-flex items-center gap-1.5 hover:text-white transition-colors"
+              className="inline-flex items-center gap-1.5 hover:text-champagne-300 transition-colors"
             >
-              <Mail className="h-3.5 w-3.5 text-amber-300" />
+              <Mail className="h-3 w-3 text-champagne-400" />
               <span>{content.contactEmail}</span>
             </a>
           </div>
         </div>
       </div>
 
-      {/* Main White Navigation Bar */}
-      <div className="bg-white/95 backdrop-blur-md border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-18 flex items-center justify-between gap-4">
-          <Link href="/" className="flex items-center gap-2.5 group shrink-0">
-            <img
-              src="/images/taxvat-logo.svg"
-              alt={`${content.brandName} Logo`}
-              className="h-11 w-11 sm:h-12 sm:w-12 object-contain"
-            />
+      {/* Main Navigation */}
+      <div
+        className={`transition-all duration-300 border-b ${
+          isTransparent
+            ? 'bg-midnight-900/45 backdrop-blur-md border-white/10 text-white'
+            : 'bg-white/95 backdrop-blur-md border-ivory-300 text-midnight-900 shadow-sm'
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-[74px] flex items-center justify-between gap-3">
+          {/* Preserved Brand Identity */}
+          <Link href="/" className="flex items-center gap-3 group shrink-0">
+            <div className="h-11 w-11 sm:h-12 sm:w-12 rounded-full bg-white p-0.5 shadow-sm ring-1 ring-champagne-400/40 flex items-center justify-center shrink-0">
+              <img
+                src="/images/taxvat-logo.svg"
+                alt={`${content.brandName} Logo`}
+                className="h-full w-full object-contain"
+              />
+            </div>
             <div className="leading-tight">
-              <div className="text-lg sm:text-xl font-extrabold tracking-tight">
-                <span className="text-brandRed-600">Tax</span>
-                <span className="text-brandGreen-600">Vat</span>{' '}
-                <span className="text-navy-800">LawAid</span>
+              <div className="text-lg sm:text-[19px] font-bold tracking-tight flex items-baseline gap-1">
+                <span>
+                  <span className="text-brandRed-500">Tax</span>
+                  <span className="text-brandGreen-500">Vat</span>
+                </span>
+                <span className={isTransparent ? 'text-white' : 'text-midnight-900'}>
+                  LawAid
+                </span>
               </div>
-              <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium hidden md:block">
-                {content.brandTagline}
+              <p
+                className={`text-[10.5px] font-medium hidden xl:block tracking-wide ${
+                  isTransparent ? 'text-ivory-200/80' : 'text-charcoal-500'
+                }`}
+              >
+                Associated Practice: {content.associatedPractice}
               </p>
             </div>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-7">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-sm font-semibold text-slate-700 hover:text-navy-800 transition-colors"
-              >
-                {link.label}
-              </Link>
-            ))}
-            <Link
-              href="/booking"
-              className="inline-flex items-center gap-2 bg-brandRed-600 hover:bg-brandRed-700 text-white text-sm font-semibold px-4 py-2.5 rounded-lg shadow-sm transition-all"
+          {/* Desktop Navigation Menu */}
+          <nav
+            aria-label="Primary Navigation"
+            className="hidden lg:flex items-center gap-5 xl:gap-6"
+          >
+            <Link href="/" className={navLinkClass(pathname === '/')}>
+              Home
+            </Link>
+            <Link href="/about" className={navLinkClass(pathname === '/about')}>
+              About Us
+            </Link>
+
+            {/* Practice Areas Dropdown */}
+            <div
+              className="relative"
+              onMouseEnter={openDropdown}
+              onMouseLeave={closeDropdown}
             >
-              <Calendar className="h-4 w-4" />
-              <span>Book Appointment</span>
+              <button
+                type="button"
+                onClick={() => setPracticeMenuOpen((v) => !v)}
+                aria-expanded={practiceMenuOpen}
+                className={`inline-flex items-center gap-1 ${navLinkClass(
+                  pathname.startsWith('/services')
+                )}`}
+              >
+                <span>Practice Areas</span>
+                <ChevronDown
+                  className={`h-3.5 w-3.5 transition-transform duration-200 ${
+                    practiceMenuOpen ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
+
+              {practiceMenuOpen && (
+                <div
+                  onMouseEnter={openDropdown}
+                  onMouseLeave={closeDropdown}
+                  className="absolute left-1/2 -translate-x-1/2 top-full pt-3 w-[440px] z-50"
+                >
+                  <div className="bg-white rounded-lg border border-ivory-300 shadow-2xl shadow-midnight-900/15 overflow-hidden text-charcoal-800">
+                    <div className="px-5 py-3 bg-ivory-100 border-b border-ivory-300 flex items-center justify-between">
+                      <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-midnight-900">
+                        Six Legal &amp; Regulatory Divisions
+                      </span>
+                      <Link
+                        href="/services"
+                        className="text-xs font-semibold text-champagne-700 hover:text-midnight-900 inline-flex items-center gap-1"
+                      >
+                        <span>All Services</span>
+                        <ArrowRight className="h-3 w-3" />
+                      </Link>
+                    </div>
+                    <div className="p-2 divide-y divide-ivory-200">
+                      {divisions.map((svc, idx) => (
+                        <Link
+                          key={svc.slug}
+                          href={`/services/${svc.slug}`}
+                          className="flex items-start gap-3 px-3 py-2.5 rounded-md hover:bg-ivory-100 transition-colors group"
+                        >
+                          <span className="text-[11px] font-serif font-semibold text-champagne-600 pt-0.5 tabular-nums">
+                            {String(idx + 1).padStart(2, '0')}
+                          </span>
+                          <div className="min-w-0">
+                            <div className="text-xs font-semibold text-midnight-900 group-hover:text-champagne-700 transition-colors">
+                              {svc.title}
+                            </div>
+                            <div className="text-[11px] text-charcoal-500 line-clamp-1">
+                              {svc.categoryTag} · {svc.divisionBadge}
+                            </div>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <Link href="/services" className={navLinkClass(pathname === '/services')}>
+              Our Services
+            </Link>
+            <Link href="/#process" className={navLinkClass(false)}>
+              Our Process
+            </Link>
+            <Link
+              href="/insights"
+              className={navLinkClass(pathname.startsWith('/insights'))}
+            >
+              Insights
+            </Link>
+            <Link href="/#faq" className={navLinkClass(false)}>
+              FAQ
+            </Link>
+            <Link href="/contact" className={navLinkClass(pathname === '/contact')}>
+              Contact
             </Link>
           </nav>
 
-          {/* Mobile Menu Toggle */}
-          <div className="flex items-center gap-2 lg:hidden">
+          {/* CTA + Mobile Menu Toggle */}
+          <div className="flex items-center gap-3 shrink-0">
             <Link
               href="/booking"
-              className="inline-flex items-center gap-1.5 bg-brandRed-600 hover:bg-brandRed-700 text-white text-xs font-semibold px-3 py-2 rounded-lg"
+              className={`hidden sm:inline-flex items-center gap-2 text-xs xl:text-[13px] font-semibold px-4 xl:px-5 py-2.5 rounded transition-all tracking-wide ${
+                isTransparent
+                  ? 'bg-champagne-500 hover:bg-champagne-400 text-midnight-950 shadow-lg shadow-black/20'
+                  : 'bg-midnight-900 hover:bg-midnight-800 text-white shadow-sm border border-champagne-500/30'
+              }`}
             >
               <Calendar className="h-3.5 w-3.5" />
-              <span>Book</span>
+              <span>Book an Appointment</span>
             </Link>
+
             <button
               type="button"
-              onClick={() => setMobileOpen((prev) => !prev)}
-              aria-label="Toggle navigation menu"
-              className="p-2 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50"
+              onClick={() => setMobileOpen(!mobileOpen)}
+              aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
+              aria-expanded={mobileOpen}
+              className={`lg:hidden p-2 rounded border transition-colors ${
+                isTransparent
+                  ? 'border-white/25 text-white hover:bg-white/10'
+                  : 'border-ivory-300 text-midnight-900 hover:bg-ivory-100'
+              }`}
             >
               {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
         </div>
-
-        {/* Mobile Drawer */}
-        {mobileOpen && (
-          <div className="lg:hidden border-t border-slate-200 bg-white px-4 py-4 space-y-2">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setMobileOpen(false)}
-                className="block px-3 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-navy-800"
-              >
-                {link.label}
-              </Link>
-            ))}
-            <Link
-              href="/booking"
-              onClick={() => setMobileOpen(false)}
-              className="mt-2 flex items-center justify-center gap-2 w-full bg-brandRed-600 text-white text-sm font-semibold px-4 py-3 rounded-lg"
-            >
-              <Calendar className="h-4 w-4" />
-              <span>Book Appointment</span>
-            </Link>
-          </div>
-        )}
       </div>
+
+      {/* Mobile Slide-Down Drawer */}
+      {mobileOpen && (
+        <div className="lg:hidden bg-white border-b border-ivory-300 shadow-2xl max-h-[82vh] overflow-y-auto text-midnight-900">
+          <div className="px-5 py-5 space-y-1">
+            <Link
+              href="/"
+              onClick={() => setMobileOpen(false)}
+              className="block py-2.5 text-sm font-semibold border-b border-ivory-200"
+            >
+              Home
+            </Link>
+            <Link
+              href="/about"
+              onClick={() => setMobileOpen(false)}
+              className="block py-2.5 text-sm font-semibold border-b border-ivory-200"
+            >
+              About Us
+            </Link>
+
+            <div className="border-b border-ivory-200">
+              <button
+                type="button"
+                onClick={() => setMobilePracticeOpen((v) => !v)}
+                className="w-full flex items-center justify-between py-2.5 text-sm font-semibold"
+              >
+                <span>Practice Areas</span>
+                <ChevronDown
+                  className={`h-4 w-4 transition-transform ${
+                    mobilePracticeOpen ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
+              {mobilePracticeOpen && (
+                <div className="pb-3 pl-3 space-y-1.5">
+                  {divisions.map((svc) => (
+                    <Link
+                      key={svc.slug}
+                      href={`/services/${svc.slug}`}
+                      onClick={() => setMobileOpen(false)}
+                      className="block py-1.5 text-xs font-medium text-charcoal-600 hover:text-midnight-900"
+                    >
+                      {svc.title}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <Link
+              href="/services"
+              onClick={() => setMobileOpen(false)}
+              className="block py-2.5 text-sm font-semibold border-b border-ivory-200"
+            >
+              Our Services
+            </Link>
+            <Link
+              href="/#process"
+              onClick={() => setMobileOpen(false)}
+              className="block py-2.5 text-sm font-semibold border-b border-ivory-200"
+            >
+              Our Process
+            </Link>
+            <Link
+              href="/insights"
+              onClick={() => setMobileOpen(false)}
+              className="block py-2.5 text-sm font-semibold border-b border-ivory-200"
+            >
+              Insights &amp; Articles
+            </Link>
+            <Link
+              href="/#faq"
+              onClick={() => setMobileOpen(false)}
+              className="block py-2.5 text-sm font-semibold border-b border-ivory-200"
+            >
+              FAQ
+            </Link>
+            <Link
+              href="/contact"
+              onClick={() => setMobileOpen(false)}
+              className="block py-2.5 text-sm font-semibold border-b border-ivory-200"
+            >
+              Contact
+            </Link>
+
+            <div className="pt-4 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <Link
+                href="/booking"
+                onClick={() => setMobileOpen(false)}
+                className="inline-flex items-center justify-center gap-2 bg-midnight-900 text-white font-semibold py-3 px-4 rounded text-sm"
+              >
+                <Calendar className="h-4 w-4 text-champagne-400" />
+                <span>Book an Appointment</span>
+              </Link>
+              <a
+                href={`tel:${content.contactPhone}`}
+                className="inline-flex items-center justify-center gap-2 bg-ivory-100 border border-ivory-300 text-midnight-900 font-semibold py-3 px-4 rounded text-sm"
+              >
+                <Phone className="h-4 w-4 text-champagne-600" />
+                <span>Call {content.contactPhone}</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }
-

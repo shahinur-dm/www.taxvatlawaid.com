@@ -28,6 +28,7 @@ import {
   ServiceCategory,
   WebsiteContentData,
 } from '@/types';
+import { RevealOnScroll } from './RevealOnScroll';
 
 const bookingFormSchema = z.object({
   customerName: z
@@ -140,7 +141,6 @@ export function BookingSection({
   const [slotFetchError, setSlotFetchError] = useState<string | null>(null);
   const [confirmation, setConfirmation] = useState<BookingConfirmation | null>(null);
 
-  // Reference tracker state
   const [lookupRef, setLookupRef] = useState('');
   const [lookupResult, setLookupResult] = useState<BookingConfirmation | null>(null);
   const [lookupLoading, setLookupLoading] = useState(false);
@@ -189,7 +189,6 @@ export function BookingSection({
         );
         const data = res.data.data;
         setSlotsData(data);
-        // Reset selected time if it is no longer available
         const stillValid = data.slots.some(
           (s) => s.label === selectedTime && s.available
         );
@@ -233,7 +232,6 @@ export function BookingSection({
         'Could not complete your booking. Please try again.'
       );
       toast.error(message);
-      // Refresh slots in case of concurrent 409 conflict
       fetchSlots(values.appointmentDate);
     }
   };
@@ -291,201 +289,233 @@ export function BookingSection({
   };
 
   return (
-    <section id="booking" className="py-16 sm:py-20 bg-white">
+    <section id="booking" className="py-20 sm:py-24 bg-ivory-100 border-y border-ivory-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* How to Book Your Consultation Header */}
-        <div className="max-w-3xl mb-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brandRed-50 border border-brandRed-100 text-brandRed-700 text-xs font-bold uppercase tracking-wider mb-4">
-            <Calendar className="h-3.5 w-3.5" />
-            <span>Client Appointment Desk</span>
+        <RevealOnScroll>
+          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-10">
+            <div className="max-w-3xl">
+              <div className="inline-flex items-center gap-2.5 text-champagne-600 text-xs font-bold uppercase tracking-[0.18em] mb-3">
+                <Calendar className="h-4 w-4" />
+                <span>Client Appointment Desk</span>
+              </div>
+              <h2 className="font-serif text-3xl sm:text-4xl lg:text-[2.75rem] font-semibold text-midnight-900 tracking-tight mb-3">
+                Schedule Your Legal Consultation
+              </h2>
+              <p className="text-charcoal-600 text-base leading-relaxed">
+                Reserve a real-time consultation slot for Chamber Visit, Video Call, or Phone Call during our chamber hours (Sunday – Thursday, 3:00 PM – 8:00 PM BST).
+              </p>
+            </div>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-navy-800 tracking-tight mb-3">
-            How to Book Your Consultation
-          </h2>
-          <p className="text-slate-600 text-base sm:text-lg leading-relaxed">
-            We keep booking simple and transparent. Follow the 3-step guide below and choose whichever booking method is most convenient for you.
-          </p>
+        </RevealOnScroll>
+
+        {/* Refined 3-Step Chamber Protocol */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+          {[
+            {
+              step: '01',
+              title: 'Choose Intake Method',
+              desc: 'Submit your live slot online, message WhatsApp / Call directly, or request an in-person Ramna chamber visit.',
+            },
+            {
+              step: '02',
+              title: 'Select Slot & Consultation Mode',
+              desc: 'Pick an open Sunday–Thursday slot (3:00 PM – 8:00 PM Asia/Dhaka) and choose Chamber Visit, Video, or Phone Call.',
+            },
+            {
+              step: '03',
+              title: 'Receive Reference & Dispatch',
+              desc: 'Get an immediate Booking Reference Slip (Status: Pending) with one-click WhatsApp & Email chamber notification.',
+            },
+          ].map((card) => (
+            <div
+              key={card.step}
+              className="rounded-lg border border-ivory-300 bg-white p-6 shadow-sm"
+            >
+              <div className="flex items-center gap-3 mb-2.5">
+                <span className="font-serif text-xl font-semibold text-champagne-600 tabular-nums">
+                  {card.step}
+                </span>
+                <h3 className="font-semibold text-midnight-900 text-sm sm:text-base">
+                  {card.title}
+                </h3>
+              </div>
+              <p className="text-xs sm:text-sm text-charcoal-600 leading-relaxed">{card.desc}</p>
+            </div>
+          ))}
         </div>
 
-        {/* 3 Step Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-10">
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="flex items-center gap-3 mb-3">
-              <span className="h-7 w-7 rounded-full bg-navy-800 text-white text-xs font-bold flex items-center justify-center">
-                1
-              </span>
-              <h3 className="font-bold text-navy-800">Choose Booking Method</h3>
-            </div>
-            <p className="text-sm text-slate-600 leading-relaxed">
-              Book via our <strong>Instant Online Form</strong>, tap to message on{' '}
-              <strong>WhatsApp / Call</strong>, or plan a <strong>Direct Chamber Visit</strong> in Ramna, Dhaka.
-            </p>
-          </div>
-
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="flex items-center gap-3 mb-3">
-              <span className="h-7 w-7 rounded-full bg-brandGreen-600 text-white text-xs font-bold flex items-center justify-center">
-                2
-              </span>
-              <h3 className="font-bold text-navy-800">Pick Slot &amp; Matter Type</h3>
-            </div>
-            <p className="text-sm text-slate-600 leading-relaxed">
-              Select an available slot (<strong>Sun–Thu, 3:00 PM – 8:00 PM</strong>) and choose{' '}
-              <strong>Chamber Visit</strong>, <strong>Video Call</strong>, or <strong>Phone Call</strong>.
-            </p>
-          </div>
-
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="flex items-center gap-3 mb-3">
-              <span className="h-7 w-7 rounded-full bg-brandRed-600 text-white text-xs font-bold flex items-center justify-center">
-                3
-              </span>
-              <h3 className="font-bold text-navy-800">Get Reference &amp; Checklist</h3>
-            </div>
-            <p className="text-sm text-slate-600 leading-relaxed">
-              Receive an immediate <strong>Booking Reference</strong> and our chamber desk confirms your time slot and exact documents (e.g., TIN, BIN, notice, or deed).
-            </p>
-          </div>
-        </div>
-
-        {/* Main 3-Method Booking Container */}
-        <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 sm:p-6 lg:p-8 shadow-sm">
-          {/* Method Selector Tabs */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        {/* Main Intake Container */}
+        <div className="rounded-lg border border-ivory-300 bg-white p-5 sm:p-8 shadow-lg shadow-midnight-900/5">
+          {/* Method Tabs */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-8">
             <button
               type="button"
               onClick={() => setActiveMethod('online')}
-              className={`text-left rounded-xl p-4 border-2 transition-all bg-white ${
+              className={`text-left rounded-lg p-4 border transition-all ${
                 activeMethod === 'online'
-                  ? 'border-navy-800 shadow-sm'
-                  : 'border-slate-200 hover:border-slate-300'
+                  ? 'border-midnight-900 bg-midnight-900 text-white shadow-md'
+                  : 'border-ivory-300 bg-ivory-50 text-midnight-900 hover:border-champagne-500'
               }`}
             >
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-brandRed-600">
-                  Method 1 • Recommended
+                <span
+                  className={`text-[10.5px] font-bold uppercase tracking-[0.16em] ${
+                    activeMethod === 'online' ? 'text-champagne-400' : 'text-champagne-700'
+                  }`}
+                >
+                  Method 01 · Online Desk
                 </span>
-                <Calendar className="h-4 w-4 text-navy-800" />
+                <Calendar
+                  className={`h-4 w-4 ${
+                    activeMethod === 'online' ? 'text-champagne-400' : 'text-midnight-900'
+                  }`}
+                />
               </div>
-              <div className="font-bold text-navy-800 text-base">
+              <div className="font-semibold text-sm sm:text-base">
                 Quick Online Booking Slip
               </div>
-              <div className="text-xs text-slate-500 mt-0.5">
-                Reserve real-time slot &amp; generate slip
+              <div
+                className={`text-xs mt-0.5 ${
+                  activeMethod === 'online' ? 'text-ivory-200/80' : 'text-charcoal-500'
+                }`}
+              >
+                Real-time slot lock &amp; reference generation
               </div>
             </button>
 
             <button
               type="button"
               onClick={() => setActiveMethod('direct')}
-              className={`text-left rounded-xl p-4 border-2 transition-all bg-white ${
+              className={`text-left rounded-lg p-4 border transition-all ${
                 activeMethod === 'direct'
-                  ? 'border-navy-800 shadow-sm'
-                  : 'border-slate-200 hover:border-slate-300'
+                  ? 'border-midnight-900 bg-midnight-900 text-white shadow-md'
+                  : 'border-ivory-300 bg-ivory-50 text-midnight-900 hover:border-champagne-500'
               }`}
             >
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-brandGreen-600">
-                  Method 2 • Fastest
+                <span
+                  className={`text-[10.5px] font-bold uppercase tracking-[0.16em] ${
+                    activeMethod === 'direct' ? 'text-champagne-400' : 'text-champagne-700'
+                  }`}
+                >
+                  Method 02 · Direct Line
                 </span>
-                <MessageCircle className="h-4 w-4 text-brandGreen-600" />
+                <MessageCircle
+                  className={`h-4 w-4 ${
+                    activeMethod === 'direct' ? 'text-emerald-400' : 'text-emerald-700'
+                  }`}
+                />
               </div>
-              <div className="font-bold text-navy-800 text-base">
+              <div className="font-semibold text-sm sm:text-base">
                 Direct Phone &amp; WhatsApp
               </div>
-              <div className="text-xs text-slate-500 mt-0.5">
-                One-tap call or WhatsApp inquiry
+              <div
+                className={`text-xs mt-0.5 ${
+                  activeMethod === 'direct' ? 'text-ivory-200/80' : 'text-charcoal-500'
+                }`}
+              >
+                Immediate urgent hearing or notice coordination
               </div>
             </button>
 
             <button
               type="button"
               onClick={() => setActiveMethod('visit')}
-              className={`text-left rounded-xl p-4 border-2 transition-all bg-white ${
+              className={`text-left rounded-lg p-4 border transition-all ${
                 activeMethod === 'visit'
-                  ? 'border-navy-800 shadow-sm'
-                  : 'border-slate-200 hover:border-slate-300'
+                  ? 'border-midnight-900 bg-midnight-900 text-white shadow-md'
+                  : 'border-ivory-300 bg-ivory-50 text-midnight-900 hover:border-champagne-500'
               }`}
             >
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-navy-700">
-                  Method 3 • In-Person
+                <span
+                  className={`text-[10.5px] font-bold uppercase tracking-[0.16em] ${
+                    activeMethod === 'visit' ? 'text-champagne-400' : 'text-champagne-700'
+                  }`}
+                >
+                  Method 03 · In-Person
                 </span>
-                <Building2 className="h-4 w-4 text-navy-800" />
+                <Building2
+                  className={`h-4 w-4 ${
+                    activeMethod === 'visit' ? 'text-champagne-400' : 'text-midnight-900'
+                  }`}
+                />
               </div>
-              <div className="font-bold text-navy-800 text-base">
-                Ramna Chamber Visit
-              </div>
-              <div className="text-xs text-slate-500 mt-0.5">
-                Address, chamber hours &amp; checklist
+              <div className="font-semibold text-sm sm:text-base">Ramna Chamber Visit</div>
+              <div
+                className={`text-xs mt-0.5 ${
+                  activeMethod === 'visit' ? 'text-ivory-200/80' : 'text-charcoal-500'
+                }`}
+              >
+                Address, chamber hours &amp; document checklist
               </div>
             </button>
           </div>
 
-          {/* Method 1: Online Booking Form + Right Navy Info Panel */}
           {activeMethod === 'online' && (
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-              {/* Left Form / Confirmation Card */}
-              <div className="lg:col-span-7 bg-white rounded-xl border border-slate-200 p-6 sm:p-8 shadow-sm">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+              {/* Left: Booking Form / Request Receipt */}
+              <div className="lg:col-span-7">
                 {confirmation ? (
                   <div className="space-y-6">
-                    <div className="rounded-xl bg-brandGreen-50 border border-brandGreen-200 p-4 flex items-start gap-3">
-                      <CheckCircle2 className="h-6 w-6 text-brandGreen-600 shrink-0 mt-0.5" />
+                    <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-5 flex items-start gap-3">
+                      <CheckCircle2 className="h-6 w-6 text-emerald-700 shrink-0 mt-0.5" />
                       <div>
-                        <h3 className="font-bold text-brandGreen-800 text-base">
+                        <h3 className="font-semibold text-emerald-950 text-base">
                           Your appointment request has been submitted successfully!
                         </h3>
-                        <p className="text-xs sm:text-sm text-brandGreen-700 mt-1">
-                          Save your Booking Reference below. Our chamber desk will verify and confirm your consultation.
+                        <p className="text-xs sm:text-sm text-emerald-800 mt-1">
+                          Keep your Booking Reference below. Your request is currently{' '}
+                          <strong>{confirmation.status}</strong> awaiting chamber desk verification and confirmation.
                         </p>
                       </div>
                     </div>
 
-                    <div className="rounded-xl border border-slate-200 bg-slate-50 p-5 space-y-4">
-                      <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-200">
+                    <div className="rounded-lg border border-ivory-300 bg-ivory-50 p-6 space-y-4">
+                      <div className="flex flex-wrap items-center justify-between gap-2 pb-4 border-b border-ivory-300">
                         <div>
-                          <div className="text-xs uppercase font-semibold text-slate-500">
+                          <div className="text-[11px] uppercase tracking-wider font-semibold text-charcoal-500">
                             Booking Reference
                           </div>
-                          <div className="text-xl font-extrabold text-navy-800 tracking-wide">
+                          <div className="font-serif text-2xl font-semibold text-midnight-900 tracking-wide">
                             {confirmation.bookingReference}
                           </div>
                         </div>
-                        <span className="inline-flex items-center px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold">
+                        <span className="inline-flex items-center px-3 py-1 rounded bg-champagne-100 border border-champagne-300 text-champagne-700 text-xs font-bold">
                           Status: {confirmation.status}
                         </span>
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                         <div>
-                          <div className="text-xs text-slate-500">Customer Name</div>
-                          <div className="font-semibold text-slate-900">
+                          <div className="text-xs text-charcoal-500">Client Name</div>
+                          <div className="font-semibold text-midnight-900">
                             {confirmation.customerName}
                           </div>
                         </div>
                         <div>
-                          <div className="text-xs text-slate-500">Service Category</div>
-                          <div className="font-semibold text-slate-900">
+                          <div className="text-xs text-charcoal-500">Service Category</div>
+                          <div className="font-semibold text-midnight-900">
                             {confirmation.serviceCategory}
                           </div>
                         </div>
                         <div>
-                          <div className="text-xs text-slate-500">Appointment Date</div>
-                          <div className="font-semibold text-slate-900">
+                          <div className="text-xs text-charcoal-500">Appointment Date</div>
+                          <div className="font-semibold text-midnight-900">
                             {confirmation.appointmentDate}
                           </div>
                         </div>
                         <div>
-                          <div className="text-xs text-slate-500">
+                          <div className="text-xs text-charcoal-500">
                             Appointment Time (Asia/Dhaka)
                           </div>
-                          <div className="font-semibold text-slate-900">
+                          <div className="font-semibold text-midnight-900">
                             {confirmation.appointmentTime}
                           </div>
                         </div>
                         <div>
-                          <div className="text-xs text-slate-500">Consultation Mode</div>
-                          <div className="font-semibold text-slate-900">
+                          <div className="text-xs text-charcoal-500">Consultation Mode</div>
+                          <div className="font-semibold text-midnight-900">
                             {confirmation.consultationMode}
                           </div>
                         </div>
@@ -498,7 +528,7 @@ export function BookingSection({
                           href={buildWhatsappDispatchUrl(confirmation)}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 bg-brandGreen-600 hover:bg-brandGreen-700 text-white font-semibold px-4 py-2.5 rounded-lg text-sm transition-colors"
+                          className="inline-flex items-center gap-2 bg-emerald-700 hover:bg-emerald-800 text-white font-semibold px-4 py-2.5 rounded text-sm transition-colors"
                         >
                           <MessageCircle className="h-4 w-4" />
                           <span>Send Slip via WhatsApp</span>
@@ -506,9 +536,9 @@ export function BookingSection({
                       )}
                       <a
                         href={buildEmailDispatchUrl(confirmation)}
-                        className="inline-flex items-center gap-2 bg-navy-800 hover:bg-navy-900 text-white font-semibold px-4 py-2.5 rounded-lg text-sm transition-colors"
+                        className="inline-flex items-center gap-2 bg-midnight-900 hover:bg-midnight-800 text-white font-semibold px-4 py-2.5 rounded text-sm transition-colors"
                       >
-                        <Mail className="h-4 w-4" />
+                        <Mail className="h-4 w-4 text-champagne-400" />
                         <span>Send via Email</span>
                       </a>
                       <button
@@ -526,7 +556,7 @@ export function BookingSection({
                             problemDescription: '',
                           });
                         }}
-                        className="inline-flex items-center gap-2 border border-slate-300 hover:bg-slate-50 text-slate-700 font-semibold px-4 py-2.5 rounded-lg text-sm transition-colors"
+                        className="inline-flex items-center gap-2 border border-ivory-300 hover:bg-ivory-100 text-midnight-900 font-semibold px-4 py-2.5 rounded text-sm transition-colors"
                       >
                         Book Another Appointment
                       </button>
@@ -534,30 +564,29 @@ export function BookingSection({
                   </div>
                 ) : (
                   <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
-                    <div>
-                      <h3 className="text-xl font-bold text-navy-800">
-                        Fill in Your Appointment Details
+                    <div className="pb-3 border-b border-ivory-200">
+                      <h3 className="font-serif text-2xl font-semibold text-midnight-900">
+                        Consultation Request Form
                       </h3>
-                      <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                        Simple 1-minute booking. Open Sunday – Thursday, 3:00 PM – 8:00 PM (Asia/Dhaka).
+                      <p className="text-xs sm:text-sm text-charcoal-500 mt-1">
+                        Open Sunday – Thursday, 3:00 PM – 8:00 PM (Asia/Dhaka).
                       </p>
                     </div>
 
-                    {/* Name & Phone */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label
                           htmlFor="customerName"
-                          className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5"
+                          className="block text-[11px] font-bold uppercase tracking-wider text-midnight-900 mb-1.5"
                         >
-                          Full Name *
+                          Full Name / Company *
                         </label>
                         <input
                           id="customerName"
                           type="text"
                           placeholder="e.g., Md. Mahmudul Hasan"
                           {...register('customerName')}
-                          className="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 focus:border-navy-800 focus:ring-2 focus:ring-navy-800/15 outline-none"
+                          className="w-full rounded border border-ivory-300 bg-ivory-50/40 px-3.5 py-2.5 text-sm text-midnight-900 focus:border-midnight-900 focus:bg-white outline-none transition-colors"
                         />
                         {errors.customerName && (
                           <p className="text-xs text-brandRed-600 mt-1">
@@ -569,7 +598,7 @@ export function BookingSection({
                       <div>
                         <label
                           htmlFor="phone"
-                          className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5"
+                          className="block text-[11px] font-bold uppercase tracking-wider text-midnight-900 mb-1.5"
                         >
                           Phone / WhatsApp Number *
                         </label>
@@ -578,7 +607,7 @@ export function BookingSection({
                           type="tel"
                           placeholder="e.g., 017XX-XXXXXX"
                           {...register('phone')}
-                          className="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 focus:border-navy-800 focus:ring-2 focus:ring-navy-800/15 outline-none"
+                          className="w-full rounded border border-ivory-300 bg-ivory-50/40 px-3.5 py-2.5 text-sm text-midnight-900 focus:border-midnight-900 focus:bg-white outline-none transition-colors"
                         />
                         {errors.phone && (
                           <p className="text-xs text-brandRed-600 mt-1">
@@ -588,19 +617,18 @@ export function BookingSection({
                       </div>
                     </div>
 
-                    {/* Email (Optional) & Service Category */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label
                           htmlFor="serviceCategory"
-                          className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5"
+                          className="block text-[11px] font-bold uppercase tracking-wider text-midnight-900 mb-1.5"
                         >
                           Service Category *
                         </label>
                         <select
                           id="serviceCategory"
                           {...register('serviceCategory')}
-                          className="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 bg-white focus:border-navy-800 focus:ring-2 focus:ring-navy-800/15 outline-none"
+                          className="w-full rounded border border-ivory-300 px-3.5 py-2.5 text-sm text-midnight-900 bg-white focus:border-midnight-900 outline-none"
                         >
                           {SERVICE_CATEGORIES.map((cat) => (
                             <option key={cat} value={cat}>
@@ -618,7 +646,7 @@ export function BookingSection({
                       <div>
                         <label
                           htmlFor="email"
-                          className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5"
+                          className="block text-[11px] font-bold uppercase tracking-wider text-midnight-900 mb-1.5"
                         >
                           Email Address (Optional)
                         </label>
@@ -627,7 +655,7 @@ export function BookingSection({
                           type="email"
                           placeholder="e.g., name@company.com"
                           {...register('email')}
-                          className="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 focus:border-navy-800 focus:ring-2 focus:ring-navy-800/15 outline-none"
+                          className="w-full rounded border border-ivory-300 bg-ivory-50/40 px-3.5 py-2.5 text-sm text-midnight-900 focus:border-midnight-900 focus:bg-white outline-none transition-colors"
                         />
                         {errors.email && (
                           <p className="text-xs text-brandRed-600 mt-1">
@@ -639,7 +667,7 @@ export function BookingSection({
 
                     {/* Consultation Mode */}
                     <div>
-                      <span className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                      <span className="block text-[11px] font-bold uppercase tracking-wider text-midnight-900 mb-1.5">
                         Consultation Mode *
                       </span>
                       <div className="grid grid-cols-3 gap-2.5">
@@ -656,13 +684,17 @@ export function BookingSection({
                               key={mode}
                               type="button"
                               onClick={() => setValue('consultationMode', mode)}
-                              className={`flex flex-col items-center justify-center gap-1 rounded-lg border py-2.5 px-2 text-xs font-semibold transition-all ${
+                              className={`flex flex-col items-center justify-center gap-1 rounded border py-2.5 px-2 text-xs font-semibold transition-all ${
                                 active
-                                  ? 'border-navy-800 bg-navy-50 text-navy-800'
-                                  : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+                                  ? 'border-midnight-900 bg-midnight-900 text-white'
+                                  : 'border-ivory-300 bg-ivory-50 text-charcoal-700 hover:border-champagne-500'
                               }`}
                             >
-                              <Icon className="h-4 w-4" />
+                              <Icon
+                                className={`h-4 w-4 ${
+                                  active ? 'text-champagne-400' : 'text-midnight-900'
+                                }`}
+                              />
                               <span>{mode}</span>
                             </button>
                           );
@@ -670,21 +702,20 @@ export function BookingSection({
                       </div>
                     </div>
 
-                    {/* Appointment Date */}
+                    {/* Date */}
                     <div>
                       <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
                         <label
                           htmlFor="appointmentDate"
-                          className="block text-xs font-bold uppercase tracking-wider text-slate-700"
+                          className="block text-[11px] font-bold uppercase tracking-wider text-midnight-900"
                         >
                           Appointment Date (Sun–Thu) *
                         </label>
-                        <span className="text-[11px] text-slate-500">
+                        <span className="text-[11px] text-charcoal-500">
                           Timezone: {settings.timezone}
                         </span>
                       </div>
 
-                      {/* Quick open-day pills */}
                       <div className="flex flex-wrap gap-2 mb-2.5">
                         {quickDates.map((qd) => (
                           <button
@@ -695,10 +726,10 @@ export function BookingSection({
                                 shouldValidate: true,
                               })
                             }
-                            className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ${
+                            className={`px-3 py-1.5 rounded border text-xs font-semibold transition-all ${
                               selectedDate === qd.dateStr
-                                ? 'bg-navy-800 text-white border-navy-800'
-                                : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-navy-600'
+                                ? 'bg-midnight-900 text-white border-midnight-900'
+                                : 'bg-ivory-100 text-midnight-900 border-ivory-300 hover:border-champagne-500'
                             }`}
                           >
                             {qd.dayShort}, {qd.label}
@@ -711,7 +742,7 @@ export function BookingSection({
                         type="date"
                         min={todayDhaka}
                         {...register('appointmentDate')}
-                        className="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 focus:border-navy-800 focus:ring-2 focus:ring-navy-800/15 outline-none"
+                        className="w-full rounded border border-ivory-300 px-3.5 py-2.5 text-sm text-midnight-900 focus:border-midnight-900 outline-none"
                       />
                       {errors.appointmentDate && (
                         <p className="text-xs text-brandRed-600 mt-1">
@@ -723,27 +754,30 @@ export function BookingSection({
                     {/* Available Time Slots */}
                     <div>
                       <div className="flex items-center justify-between mb-1.5">
-                        <span className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                        <span className="block text-[11px] font-bold uppercase tracking-wider text-midnight-900">
                           Available Time Slot (3:00 PM – 8:00 PM) *
                         </span>
                         {slotsData && (
-                          <span className="text-[11px] font-medium text-slate-500">
+                          <span className="text-[11px] font-medium text-charcoal-500">
                             {slotsData.dayName} • {slotsData.slotDurationMinutes} min/slot
                           </span>
                         )}
                       </div>
 
                       {loadingSlots ? (
-                        <div className="flex items-center gap-2 text-xs text-slate-500 py-4">
-                          <Loader2 className="h-4 w-4 animate-spin text-navy-800" />
+                        <div className="flex items-center gap-2 text-xs text-charcoal-500 py-4">
+                          <Loader2 className="h-4 w-4 animate-spin text-midnight-900" />
                           <span>Checking live slot availability...</span>
                         </div>
                       ) : slotFetchError ? (
-                        <div className="rounded-lg border border-brandRed-200 bg-brandRed-50 p-3 text-xs text-brandRed-700">
+                        <div className="rounded border border-brandRed-200 bg-brandRed-50 p-3 text-xs text-brandRed-700">
                           {slotFetchError}
                         </div>
-                      ) : slotsData && (!slotsData.isAvailableDay || slotsData.isPastDate || slotsData.isTooFarAhead) ? (
-                        <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs font-medium text-amber-800">
+                      ) : slotsData &&
+                        (!slotsData.isAvailableDay ||
+                          slotsData.isPastDate ||
+                          slotsData.isTooFarAhead) ? (
+                        <div className="rounded border border-champagne-300 bg-champagne-100/60 p-3 text-xs font-medium text-midnight-900">
                           {slotsData.message ||
                             'Selected date is unavailable. Please choose Sunday through Thursday.'}
                         </div>
@@ -761,12 +795,12 @@ export function BookingSection({
                                     shouldValidate: true,
                                   })
                                 }
-                                className={`rounded-lg border px-2 py-2 text-xs font-semibold transition-all text-center ${
+                                className={`rounded border px-2 py-2 text-xs font-semibold transition-all text-center ${
                                   !slot.available
-                                    ? 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed line-through'
+                                    ? 'bg-ivory-200/60 border-ivory-300 text-charcoal-500/60 cursor-not-allowed line-through'
                                     : isSelected
-                                      ? 'bg-brandRed-600 border-brandRed-600 text-white shadow-sm'
-                                      : 'bg-white border-slate-200 text-slate-800 hover:border-navy-800 hover:text-navy-800'
+                                      ? 'bg-champagne-500 border-champagne-600 text-midnight-950 shadow-sm'
+                                      : 'bg-white border-ivory-300 text-midnight-900 hover:border-midnight-900'
                                 }`}
                                 title={
                                   slot.available
@@ -787,7 +821,7 @@ export function BookingSection({
                           })}
                         </div>
                       ) : (
-                        <div className="text-xs text-slate-500 py-2">
+                        <div className="text-xs text-charcoal-500 py-2">
                           No slots configured for this date.
                         </div>
                       )}
@@ -798,27 +832,27 @@ export function BookingSection({
                       )}
                     </div>
 
-                    {/* Brief Note / Problem Description (Optional) */}
+                    {/* Problem Description */}
                     <div>
                       <label
                         htmlFor="problemDescription"
-                        className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5"
+                        className="block text-[11px] font-bold uppercase tracking-wider text-midnight-900 mb-1.5"
                       >
                         Problem Description (Optional)
                       </label>
                       <textarea
                         id="problemDescription"
                         rows={3}
-                        placeholder="Mention if you received an NBR notice, need new company registration, VAT/BIN help, or have a tribunal date..."
+                        placeholder="Mention if you received an NBR notice, need new company registration, VAT/BIN assistance, or have a tribunal hearing..."
                         {...register('problemDescription')}
-                        className="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 focus:border-navy-800 focus:ring-2 focus:ring-navy-800/15 outline-none"
+                        className="w-full rounded border border-ivory-300 bg-ivory-50/40 px-3.5 py-2.5 text-sm text-midnight-900 focus:border-midnight-900 focus:bg-white outline-none transition-colors"
                       />
                     </div>
 
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full inline-flex items-center justify-center gap-2 bg-brandRed-600 hover:bg-brandRed-700 disabled:opacity-60 text-white font-bold py-3.5 px-6 rounded-lg shadow-sm transition-all text-sm sm:text-base"
+                      className="w-full inline-flex items-center justify-center gap-2 bg-midnight-900 hover:bg-midnight-800 disabled:opacity-60 text-white font-semibold py-3.5 px-6 rounded shadow-md transition-all text-sm sm:text-base"
                     >
                       {isSubmitting ? (
                         <>
@@ -827,7 +861,7 @@ export function BookingSection({
                         </>
                       ) : (
                         <>
-                          <Calendar className="h-4 w-4" />
+                          <Calendar className="h-4 w-4 text-champagne-400" />
                           <span>Generate Appointment Slip &amp; Submit Request</span>
                         </>
                       )}
@@ -836,45 +870,46 @@ export function BookingSection({
                 )}
               </div>
 
-              {/* Right Navy Info Panel + Reference Tracker */}
+              {/* Right Midnight Info Panel + Reference Tracker */}
               <div className="lg:col-span-5 space-y-5">
-                <div className="bg-navy-800 text-white rounded-xl p-6 sm:p-7 shadow-sm space-y-5">
-                  <div className="inline-flex items-center px-3 py-1 rounded-md bg-lime-400 text-navy-950 text-xs font-bold">
-                    Instant Dispatch Enabled
+                <div className="bg-midnight-900 text-white rounded-lg p-7 border border-champagne-500/30 space-y-5">
+                  <div className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] text-champagne-400">
+                    <span className="h-1.5 w-1.5 rounded-full bg-champagne-400" />
+                    <span>Chamber Intake Protocol</span>
                   </div>
 
-                  <h3 className="text-xl font-bold text-white">
+                  <h3 className="font-serif text-2xl font-semibold text-white">
                     What Happens After You Submit?
                   </h3>
 
-                  <ul className="space-y-4 text-sm text-slate-200">
+                  <ul className="space-y-4 text-sm text-ivory-200/90">
                     <li className="flex items-start gap-3">
-                      <CheckCircle2 className="h-5 w-5 text-brandGreen-500 shrink-0 mt-0.5" />
+                      <CheckCircle2 className="h-5 w-5 text-champagne-400 shrink-0 mt-0.5" />
                       <span>
-                        You receive an immediate <strong>Booking Reference Slip</strong> on screen and your slot is reserved in our system.
+                        You receive an immediate <strong className="text-white">Booking Reference Slip</strong> on screen and your slot is reserved in real time (initially <strong className="text-white">Pending</strong> verification).
                       </span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <CheckCircle2 className="h-5 w-5 text-brandGreen-500 shrink-0 mt-0.5" />
+                      <CheckCircle2 className="h-5 w-5 text-champagne-400 shrink-0 mt-0.5" />
                       <span>
-                        One click sends your pre-formatted request directly to our{' '}
-                        <strong>WhatsApp ({content.contactWhatsapp})</strong> or{' '}
-                        <strong>Email ({content.contactEmail})</strong>.
+                        One click forwards your pre-formatted slip directly to our{' '}
+                        <strong className="text-white">WhatsApp ({content.contactWhatsapp})</strong> or{' '}
+                        <strong className="text-white">Email ({content.contactEmail})</strong>.
                       </span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <CheckCircle2 className="h-5 w-5 text-brandGreen-500 shrink-0 mt-0.5" />
+                      <CheckCircle2 className="h-5 w-5 text-champagne-400 shrink-0 mt-0.5" />
                       <span>
-                        Advocate {content.leadCounselName}&apos;s desk confirms your slot and document checklist.
+                        Advocate {content.leadCounselName}&apos;s chamber desk confirms your appointment slot and advises on documents to bring or share.
                       </span>
                     </li>
                   </ul>
 
-                  <div className="pt-4 border-t border-navy-700 text-xs sm:text-sm text-slate-300">
-                    Need urgent assistance right now? Call{' '}
+                  <div className="pt-4 border-t border-white/15 text-xs sm:text-sm text-ivory-200/80">
+                    Need urgent statutory notice assistance? Call{' '}
                     <a
                       href={`tel:${content.contactPhone}`}
-                      className="font-bold text-white underline"
+                      className="font-semibold text-champagne-300 underline"
                     >
                       {content.contactPhone}
                     </a>{' '}
@@ -883,11 +918,11 @@ export function BookingSection({
                 </div>
 
                 {/* Track Existing Booking Reference */}
-                <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
-                  <h4 className="font-bold text-navy-800 text-sm mb-1">
+                <div className="bg-ivory-100 rounded-lg border border-ivory-300 p-6">
+                  <h4 className="font-serif text-lg font-semibold text-midnight-900 mb-1">
                     Check Existing Booking Status
                   </h4>
-                  <p className="text-xs text-slate-500 mb-3">
+                  <p className="text-xs text-charcoal-500 mb-3">
                     Enter your Booking Reference (e.g., TVLA-20261115-A1B2C3)
                   </p>
                   <form onSubmit={handleLookupReference} className="flex gap-2">
@@ -896,17 +931,17 @@ export function BookingSection({
                       value={lookupRef}
                       onChange={(e) => setLookupRef(e.target.value)}
                       placeholder="TVLA-..."
-                      className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-xs sm:text-sm uppercase focus:border-navy-800 outline-none"
+                      className="flex-1 rounded border border-ivory-300 bg-white px-3 py-2 text-xs sm:text-sm uppercase focus:border-midnight-900 outline-none"
                     />
                     <button
                       type="submit"
                       disabled={lookupLoading}
-                      className="inline-flex items-center gap-1.5 bg-navy-800 hover:bg-navy-900 text-white text-xs sm:text-sm font-semibold px-3.5 py-2 rounded-lg"
+                      className="inline-flex items-center gap-1.5 bg-midnight-900 hover:bg-midnight-800 text-white text-xs sm:text-sm font-semibold px-4 py-2 rounded"
                     >
                       {lookupLoading ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
-                        <Search className="h-4 w-4" />
+                        <Search className="h-4 w-4 text-champagne-400" />
                       )}
                       <span>Check</span>
                     </button>
@@ -917,19 +952,19 @@ export function BookingSection({
                   )}
 
                   {lookupResult && (
-                    <div className="mt-3 rounded-lg bg-slate-50 border border-slate-200 p-3 text-xs space-y-1">
+                    <div className="mt-3 rounded bg-white border border-ivory-300 p-3.5 text-xs space-y-1">
                       <div className="flex items-center justify-between">
-                        <span className="font-bold text-navy-800">
+                        <span className="font-bold text-midnight-900">
                           {lookupResult.bookingReference}
                         </span>
-                        <span className="px-2 py-0.5 rounded bg-navy-100 text-navy-800 font-bold">
+                        <span className="px-2 py-0.5 rounded bg-champagne-100 text-champagne-700 font-bold">
                           {lookupResult.status}
                         </span>
                       </div>
-                      <div className="text-slate-700">
+                      <div className="text-charcoal-700 font-medium">
                         {lookupResult.customerName} • {lookupResult.serviceCategory}
                       </div>
-                      <div className="text-slate-500">
+                      <div className="text-charcoal-500">
                         {lookupResult.appointmentDate} at {lookupResult.appointmentTime} (
                         {lookupResult.consultationMode})
                       </div>
@@ -940,32 +975,31 @@ export function BookingSection({
             </div>
           )}
 
-          {/* Method 2: Direct Phone & WhatsApp */}
           {activeMethod === 'direct' && (
-            <div className="bg-white rounded-xl border border-slate-200 p-6 sm:p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="rounded-lg border border-ivory-300 bg-ivory-50 p-6 sm:p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-4">
-                <span className="inline-flex px-3 py-1 rounded-full bg-brandGreen-50 text-brandGreen-700 text-xs font-bold">
-                  Fastest Direct Desk
+                <span className="inline-block text-[11px] font-bold uppercase tracking-[0.16em] text-champagne-700">
+                  Direct Chamber Coordination
                 </span>
-                <h3 className="text-2xl font-bold text-navy-800">
+                <h3 className="font-serif text-2xl font-semibold text-midnight-900">
                   Call or Message Our Chamber Directly
                 </h3>
-                <p className="text-sm text-slate-600 leading-relaxed">
-                  For urgent NBR notices, tribunal dates, customs release issues, or immediate guidance, contact our chamber desk directly during consultation hours ({settings.officeHoursText}).
+                <p className="text-sm text-charcoal-600 leading-relaxed">
+                  For urgent NBR notices, tribunal dates, customs release matters, or immediate inquiries, contact our chamber desk directly during consultation hours ({settings.officeHoursText}).
                 </p>
                 <div className="flex flex-wrap gap-3 pt-2">
                   <a
                     href={`tel:${content.contactPhone}`}
-                    className="inline-flex items-center gap-2 bg-navy-800 hover:bg-navy-900 text-white font-semibold px-5 py-3 rounded-lg text-sm"
+                    className="inline-flex items-center gap-2 bg-midnight-900 hover:bg-midnight-800 text-white font-semibold px-5 py-3 rounded text-sm"
                   >
-                    <Phone className="h-4 w-4" />
+                    <Phone className="h-4 w-4 text-champagne-400" />
                     <span>Call {content.contactPhone}</span>
                   </a>
                   <a
                     href={`${whatsappBase}?text=${encodeURIComponent('Assalamu Alaikum, I would like to book a legal/tax consultation with TaxVat LawAid.')}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 bg-brandGreen-600 hover:bg-brandGreen-700 text-white font-semibold px-5 py-3 rounded-lg text-sm"
+                    className="inline-flex items-center gap-2 bg-emerald-700 hover:bg-emerald-800 text-white font-semibold px-5 py-3 rounded text-sm"
                   >
                     <MessageCircle className="h-4 w-4" />
                     <span>WhatsApp {content.contactWhatsapp}</span>
@@ -973,11 +1007,11 @@ export function BookingSection({
                 </div>
               </div>
 
-              <div className="rounded-xl bg-slate-50 border border-slate-200 p-5 space-y-3 text-sm">
-                <h4 className="font-bold text-navy-800">
+              <div className="rounded-lg bg-white border border-ivory-300 p-6 space-y-3 text-sm">
+                <h4 className="font-serif text-lg font-semibold text-midnight-900">
                   What to Mention in Your Message
                 </h4>
-                <ul className="space-y-2 text-slate-600 list-disc pl-5">
+                <ul className="space-y-2 text-charcoal-600 list-disc pl-5">
                   <li>Your Full Name / Company Name</li>
                   <li>Matter Type (Income Tax, VAT, Customs, RJSC, IP, or Litigation)</li>
                   <li>Preferred Date &amp; Time (Sunday–Thursday, 3:00 PM – 8:00 PM)</li>
@@ -987,28 +1021,27 @@ export function BookingSection({
             </div>
           )}
 
-          {/* Method 3: Ramna Chamber Visit */}
           {activeMethod === 'visit' && (
-            <div className="bg-white rounded-xl border border-slate-200 p-6 sm:p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="rounded-lg border border-ivory-300 bg-ivory-50 p-6 sm:p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-4">
-                <span className="inline-flex px-3 py-1 rounded-full bg-navy-50 text-navy-800 text-xs font-bold">
+                <span className="inline-block text-[11px] font-bold uppercase tracking-[0.16em] text-champagne-700">
                   In-Person Consultation
                 </span>
-                <h3 className="text-2xl font-bold text-navy-800">
+                <h3 className="font-serif text-2xl font-semibold text-midnight-900">
                   Visit Our Chamber in Ramna, Dhaka
                 </h3>
-                <div className="space-y-3 text-sm text-slate-700">
+                <div className="space-y-3 text-sm text-charcoal-700">
                   <div className="flex items-start gap-2.5">
-                    <MapPin className="h-5 w-5 text-brandRed-600 shrink-0 mt-0.5" />
+                    <MapPin className="h-5 w-5 text-champagne-600 shrink-0 mt-0.5" />
                     <div>
-                      <div className="font-bold text-navy-800">Chamber Address</div>
-                      <div>{content.officeAddress}</div>
+                      <div className="font-semibold text-midnight-900">Chamber Address</div>
+                      <div>{content.officeAddress}, Bangladesh</div>
                     </div>
                   </div>
                   <div className="flex items-start gap-2.5">
-                    <Clock className="h-5 w-5 text-brandGreen-600 shrink-0 mt-0.5" />
+                    <Clock className="h-5 w-5 text-champagne-600 shrink-0 mt-0.5" />
                     <div>
-                      <div className="font-bold text-navy-800">Consultation Hours</div>
+                      <div className="font-semibold text-midnight-900">Consultation Hours</div>
                       <div>{settings.officeHoursText}</div>
                     </div>
                   </div>
@@ -1019,16 +1052,18 @@ export function BookingSection({
                     setValue('consultationMode', 'Chamber Visit');
                     setActiveMethod('online');
                   }}
-                  className="inline-flex items-center gap-2 bg-brandRed-600 hover:bg-brandRed-700 text-white font-semibold px-5 py-2.5 rounded-lg text-sm"
+                  className="inline-flex items-center gap-2 bg-midnight-900 hover:bg-midnight-800 text-white font-semibold px-5 py-2.5 rounded text-sm"
                 >
-                  <Calendar className="h-4 w-4" />
+                  <Calendar className="h-4 w-4 text-champagne-400" />
                   <span>Reserve a Chamber Visit Slot</span>
                 </button>
               </div>
 
-              <div className="rounded-xl bg-slate-50 border border-slate-200 p-5 space-y-3 text-sm">
-                <h4 className="font-bold text-navy-800">Recommended Documents to Bring</h4>
-                <ul className="space-y-2 text-slate-600 list-disc pl-5">
+              <div className="rounded-lg bg-white border border-ivory-300 p-6 space-y-3 text-sm">
+                <h4 className="font-serif text-lg font-semibold text-midnight-900">
+                  Recommended Documents to Bring
+                </h4>
+                <ul className="space-y-2 text-charcoal-600 list-disc pl-5">
                   <li>NID / Passport and company authorisation letter (if applicable)</li>
                   <li>TIN, 13-digit BIN, RJSC incorporation &amp; trade licence copies</li>
                   <li>Any impugned notice, assessment order, FIR, contract, or deed</li>
@@ -1042,4 +1077,3 @@ export function BookingSection({
     </section>
   );
 }
-

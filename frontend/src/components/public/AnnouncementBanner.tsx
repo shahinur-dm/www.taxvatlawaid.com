@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Megaphone, X } from 'lucide-react';
+import { Bell, X } from 'lucide-react';
 
 interface AnnouncementBannerProps {
   enabled: boolean;
@@ -19,19 +19,21 @@ export function AnnouncementBanner({ enabled, text }: AnnouncementBannerProps) {
     <div
       role="status"
       aria-live="polite"
-      className="bg-amber-50 border-b border-amber-200 text-amber-950 px-4 py-2 text-xs sm:text-sm"
+      className="bg-midnight-950 border-b border-champagne-500/30 text-ivory-100 px-4 py-2 text-xs sm:text-[13px]"
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
         <div className="flex items-center gap-2.5 min-w-0">
-          <span className="inline-flex h-2 w-2 rounded-full bg-amber-600 animate-pulse shrink-0" />
-          <Megaphone className="h-4 w-4 text-amber-700 shrink-0 hidden sm:inline" />
-          <p className="font-medium truncate sm:whitespace-normal">{text}</p>
+          <span className="inline-flex h-2 w-2 rounded-full bg-champagne-400 animate-pulse shrink-0" />
+          <Bell className="h-3.5 w-3.5 text-champagne-400 shrink-0 hidden sm:inline" />
+          <p className="font-medium tracking-wide truncate sm:whitespace-normal text-ivory-100/95">
+            {text}
+          </p>
         </div>
         <button
           type="button"
           onClick={() => setDismissed(true)}
           aria-label="Hide announcement"
-          className="p-1 rounded hover:bg-amber-200/60 text-amber-800 transition-colors shrink-0"
+          className="p-1 rounded hover:bg-white/10 text-champagne-300 transition-colors shrink-0"
         >
           <X className="h-3.5 w-3.5" />
         </button>
@@ -39,4 +41,3 @@ export function AnnouncementBanner({ enabled, text }: AnnouncementBannerProps) {
     </div>
   );
 }
-

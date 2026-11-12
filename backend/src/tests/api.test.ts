@@ -253,6 +253,34 @@ describe('TaxVat LawAid Backend API Integration Tests', () => {
     assert.equal(publicAfter.body.data.announcementEnabled, false);
     assert.match(publicAfter.body.data.announcementText, /Maintenance complete soon/);
 
+    // Inquiry + Article CRUD flow
+    const inquiryRes = await request(app).post('/api/inquiries').send({
+      name: 'Farhana Yasmin',
+      phone: '01722334455',
+      email: 'farhana@example.com',
+      subject: 'VAT Audit Notice Inquiry',
+      message: 'Received an audit notice and would like an initial document review.',
+    });
+    assert.equal(inquiryRes.status, 201);
+
+    const adminInquiries = await agent.get('/api/admin/inquiries');
+    assert.equal(adminInquiries.status, 200);
+    assert.equal(adminInquiries.body.data.length, 1);
+
+    const articleRes = await agent.post('/api/admin/articles').send({
+      title: 'Procedural Checklist for Monthly VAT Return Filings',
+      category: 'VAT Updates',
+      summary: 'Key statutory reconciliation records required under VAT & SD Act, 2012.',
+      content: 'Detailed chamber checklist covering Mushak 6.1, 6.2, 6.3, and VDS certificates prior to filing.',
+      statutoryReference: 'VAT & SD Act, 2012',
+      isPublished: true,
+    });
+    assert.equal(articleRes.status, 201);
+
+    const publicArticles = await request(app).get('/api/articles');
+    assert.equal(publicArticles.status, 200);
+    assert.equal(publicArticles.body.data.length, 1);
+
     await agent.post('/api/auth/logout');
     const afterLogout = await agent.get('/api/auth/me');
     assert.equal(afterLogout.status, 401);

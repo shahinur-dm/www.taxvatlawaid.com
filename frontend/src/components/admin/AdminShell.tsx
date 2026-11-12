@@ -5,10 +5,12 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import {
+  BookOpen,
   Briefcase,
   CalendarCheck,
   ExternalLink,
   FileEdit,
+  Inbox,
   LayoutDashboard,
   Loader2,
   LogOut,
@@ -28,6 +30,8 @@ interface AdminShellProps {
 const NAV_ITEMS = [
   { label: 'Overview', href: '/admin', icon: LayoutDashboard },
   { label: 'Appointments', href: '/admin/appointments', icon: CalendarCheck },
+  { label: 'Inquiries', href: '/admin/inquiries', icon: Inbox },
+  { label: 'Insights & Articles', href: '/admin/insights', icon: BookOpen },
   { label: 'Services & Divisions', href: '/admin/services', icon: Briefcase },
   { label: 'Website Content', href: '/admin/content', icon: FileEdit },
   { label: 'Settings & Notice', href: '/admin/settings', icon: Settings },

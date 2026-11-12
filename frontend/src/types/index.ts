@@ -189,3 +189,42 @@ export interface DashboardStats {
   upcomingAppointments: AppointmentRecord[];
 }
 
+export const ARTICLE_CATEGORIES = [
+  'Tax Updates',
+  'VAT Updates',
+  'Customs Regulations',
+  'Corporate Law',
+  'RJSC Compliance',
+  'Legal Guidelines',
+  'Business Compliance',
+] as const;
+
+export type ArticleCategory = (typeof ARTICLE_CATEGORIES)[number];
+
+export interface ArticleItem {
+  _id: string;
+  title: string;
+  slug: string;
+  category: ArticleCategory;
+  summary: string;
+  content: string;
+  statutoryReference: string;
+  authorName: string;
+  isPublished: boolean;
+  publishedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface InquiryItem {
+  _id: string;
+  name: string;
+  phone: string;
+  email?: string;
+  subject: string;
+  message: string;
+  status: 'New' | 'Reviewed' | 'Responded';
+  createdAt: string;
+}
+
+

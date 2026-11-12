@@ -10,6 +10,17 @@ import {
 } from '../controllers/adminAppointmentController';
 import { updateContent } from '../controllers/contentController';
 import {
+  createArticle,
+  deleteArticle,
+  getAdminArticles,
+  updateArticle,
+} from '../controllers/articleController';
+import {
+  deleteInquiry,
+  getAdminInquiries,
+  updateInquiryStatus,
+} from '../controllers/inquiryController';
+import {
   createService,
   deleteService,
   getAdminServices,
@@ -19,10 +30,13 @@ import { getAdminSettings, updateSettings } from '../controllers/settingsControl
 import { requireAdmin, requireAuth } from '../middleware/auth';
 import { validateBody } from '../middleware/validate';
 import {
+  articleSchema,
   serviceSchema,
   updateAppointmentNotesSchema,
   updateAppointmentStatusSchema,
+  updateArticleSchema,
   updateContentSchema,
+  updateInquiryStatusSchema,
   updateServiceSchema,
   updateSettingsSchema,
 } from '../validators/schemas';
@@ -63,6 +77,21 @@ router.patch('/settings', validateBody(updateSettingsSchema), updateSettings);
 
 // Content management
 router.patch('/content', validateBody(updateContentSchema), updateContent);
+
+// Insights / Articles management
+router.get('/articles', getAdminArticles);
+router.post('/articles', validateBody(articleSchema), createArticle);
+router.patch('/articles/:id', validateBody(updateArticleSchema), updateArticle);
+router.delete('/articles/:id', deleteArticle);
+
+// Contact inquiries management
+router.get('/inquiries', getAdminInquiries);
+router.patch(
+  '/inquiries/:id/status',
+  validateBody(updateInquiryStatusSchema),
+  updateInquiryStatus
+);
+router.delete('/inquiries/:id', deleteInquiry);
 
 export default router;
 

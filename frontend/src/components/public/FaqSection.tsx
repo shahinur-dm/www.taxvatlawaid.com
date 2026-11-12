@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, HelpCircle } from 'lucide-react';
 import { FaqItem } from '@/types';
+import { RevealOnScroll } from './RevealOnScroll';
 
 interface FaqSectionProps {
   faqs: FaqItem[];
@@ -12,46 +13,68 @@ export function FaqSection({ faqs }: FaqSectionProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <section id="faq" className="py-16 sm:py-20 bg-white">
+    <section id="faq" className="py-20 sm:py-24 bg-ivory-100 border-t border-ivory-300">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-10">
-          <span className="inline-flex items-center px-3.5 py-1 rounded-full bg-slate-100 text-navy-800 text-xs font-bold uppercase tracking-wider mb-3">
-            Common Client Questions
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-navy-800 tracking-tight">
-            Frequently Asked Questions
-          </h2>
-        </div>
+        <RevealOnScroll>
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 text-champagne-700 text-xs font-bold uppercase tracking-[0.18em] mb-3">
+              <HelpCircle className="h-4 w-4" />
+              <span>Common Client Questions</span>
+            </div>
+            <h2 className="font-serif text-3xl sm:text-4xl font-semibold text-midnight-900 tracking-tight mb-3">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-sm sm:text-base text-charcoal-600 max-w-xl mx-auto">
+              Clear procedural guidance on tax, VAT, customs appeals, RJSC incorporations, and engaging our Dhaka chamber.
+            </p>
+          </div>
+        </RevealOnScroll>
 
         <div className="space-y-3">
           {faqs.map((item, idx) => {
             const isOpen = openIndex === idx;
             return (
-              <div
-                key={idx}
-                className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden transition-all"
-              >
-                <button
-                  type="button"
-                  onClick={() => setOpenIndex(isOpen ? null : idx)}
-                  aria-expanded={isOpen}
-                  className="w-full flex items-center justify-between gap-4 px-5 sm:px-6 py-4 sm:py-5 text-left hover:bg-slate-50/80 transition-colors"
+              <RevealOnScroll key={idx} delayMs={idx * 45}>
+                <div
+                  className={`rounded-lg border transition-all duration-300 overflow-hidden ${
+                    isOpen
+                      ? 'bg-white border-champagne-500 shadow-md shadow-midnight-900/5'
+                      : 'bg-white border-ivory-300 hover:border-champagne-400'
+                  }`}
                 >
-                  <span className="font-bold text-navy-800 text-sm sm:text-base">
-                    {item.question}
-                  </span>
-                  <ChevronDown
-                    className={`h-5 w-5 text-slate-500 shrink-0 transition-transform duration-200 ${
-                      isOpen ? 'rotate-180 text-navy-800' : ''
+                  <button
+                    type="button"
+                    onClick={() => setOpenIndex(isOpen ? null : idx)}
+                    aria-expanded={isOpen}
+                    className="w-full flex items-center justify-between gap-4 px-6 py-5 text-left transition-colors"
+                  >
+                    <div className="flex items-center gap-4 min-w-0">
+                      <span className="font-serif text-sm font-semibold text-champagne-600 tabular-nums shrink-0">
+                        {String(idx + 1).padStart(2, '0')}
+                      </span>
+                      <span className="font-serif text-base sm:text-lg font-semibold text-midnight-900 leading-snug">
+                        {item.question}
+                      </span>
+                    </div>
+                    <ChevronDown
+                      className={`h-5 w-5 text-champagne-600 shrink-0 transition-transform duration-300 ${
+                        isOpen ? 'rotate-180 text-midnight-900' : ''
+                      }`}
+                    />
+                  </button>
+                  <div
+                    className={`grid transition-all duration-300 ease-editorial ${
+                      isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
                     }`}
-                  />
-                </button>
-                {isOpen && (
-                  <div className="px-5 sm:px-6 pb-5 pt-1 text-sm text-slate-600 leading-relaxed border-t border-slate-100">
-                    {item.answer}
+                  >
+                    <div className="overflow-hidden">
+                      <div className="px-6 pb-6 pt-1 pl-14 text-sm sm:text-[15px] text-charcoal-600 leading-relaxed border-t border-ivory-200">
+                        {item.answer}
+                      </div>
+                    </div>
                   </div>
-                )}
-              </div>
+                </div>
+              </RevealOnScroll>
             );
           })}
         </div>
@@ -59,4 +82,3 @@ export function FaqSection({ faqs }: FaqSectionProps) {
     </section>
   );
 }
-
