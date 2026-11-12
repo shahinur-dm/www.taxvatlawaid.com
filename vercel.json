@@ -14,8 +14,7 @@
     },
     "backend": {
       "root": "backend",
-      "entrypoint": "src/server.ts",
-      "buildCommand": ""
+      "entrypoint": "src/server.ts"
     }
   },
   "rewrites": [
