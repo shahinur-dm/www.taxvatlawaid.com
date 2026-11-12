@@ -24,3 +24,4 @@ export function TaxAidBrand({ className = '', darkBg = false }: TaxAidBrandProps
     </span>
   );
 }
+
