@@ -44,12 +44,185 @@ export async function listAppointments(
       filter.status = status;
     }
 
+    const fallbackAppointmentDate = {
+      $cond: [
+        { $eq: [{ $type: '$appointmentDate' }, 'date'] },
+        '$appointmentDate',
+        new Date(0),
+      ],
+    };
+
+    const fallbackBaseDate = {
+      $dateFromString: {
+        dateString: { $ifNull: ['$appointmentDateStr', ''] },
+        format: '%Y-%m-%d',
+        timezone: 'Asia/Dhaka',
+        onError: fallbackAppointmentDate,
+        onNull: fallbackAppointmentDate,
+      },
+    };
+
+    const fallbackTimeOffsetMs = {
+      $let: {
+        vars: {
+          trimmedTime: {
+            $trim: { input: { $ifNull: ['$appointmentTime', ''] } },
+          },
+        },
+        in: {
+          $let: {
+            vars: {
+              spaceParts: { $split: ['$$trimmedTime', ' '] },
+            },
+            in: {
+              $let: {
+                vars: {
+                  hmParts: {
+                    $split: [
+                      { $ifNull: [{ $arrayElemAt: ['$$spaceParts', 0] }, ''] },
+                      ':',
+                    ],
+                  },
+                  ampm: {
+                    $toUpper: {
+                      $ifNull: [{ $arrayElemAt: ['$$spaceParts', 1] }, ''],
+                    },
+                  },
+                },
+                in: {
+                  $let: {
+                    vars: {
+                      rawHour: {
+                        $convert: {
+                          input: { $arrayElemAt: ['$$hmParts', 0] },
+                          to: 'int',
+                          onError: 0,
+                          onNull: 0,
+                        },
+                      },
+                      rawMinute: {
+                        $convert: {
+                          input: { $arrayElemAt: ['$$hmParts', 1] },
+                          to: 'int',
+                          onError: 0,
+                          onNull: 0,
+                        },
+                      },
+                    },
+                    in: {
+                      $let: {
+                        vars: {
+                          hour24: {
+                            $switch: {
+                              branches: [
+                                {
+                                  case: {
+                                    $and: [
+                                      { $eq: ['$$ampm', 'PM'] },
+                                      { $lt: ['$$rawHour', 12] },
+                                    ],
+                                  },
+                                  then: { $add: ['$$rawHour', 12] },
+                                },
+                                {
+                                  case: {
+                                    $and: [
+                                      { $eq: ['$$ampm', 'AM'] },
+                                      { $eq: ['$$rawHour', 12] },
+                                    ],
+                                  },
+                                  then: 0,
+                                },
+                              ],
+                              default: '$$rawHour',
+                            },
+                          },
+                        },
+                        in: {
+                          $multiply: [
+                            {
+                              $add: [
+                                { $multiply: ['$$hour24', 60] },
+                                '$$rawMinute',
+                              ],
+                            },
+                            60000,
+                          ],
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    };
+
     const [items, total] = await Promise.all([
-      Appointment.find(filter)
-        .sort({ appointmentDateStr: -1, createdAt: -1 })
-        .skip((page - 1) * limit)
-        .limit(limit)
-        .lean(),
+      Appointment.aggregate([
+        { $match: filter },
+        {
+          $addFields: {
+            _parsedCreatedAt: {
+              $cond: [
+                { $eq: [{ $type: '$createdAt' }, 'date'] },
+                '$createdAt',
+                {
+                  $cond: [
+                    { $eq: [{ $type: '$createdAt' }, 'string'] },
+                    {
+                      $dateFromString: {
+                        dateString: '$createdAt',
+                        onError: null,
+                        onNull: null,
+                      },
+                    },
+                    null,
+                  ],
+                },
+              ],
+            },
+            _fallbackDateTime: {
+              $add: [fallbackBaseDate, fallbackTimeOffsetMs],
+            },
+          },
+        },
+        {
+          $addFields: {
+            _effectiveSortDate: {
+              $cond: [
+                {
+                  $and: [
+                    { $eq: [{ $type: '$_parsedCreatedAt' }, 'date'] },
+                    { $gt: ['$_parsedCreatedAt', new Date(0)] },
+                  ],
+                },
+                '$_parsedCreatedAt',
+                '$_fallbackDateTime',
+              ],
+            },
+          },
+        },
+        {
+          $sort: {
+            _effectiveSortDate: -1,
+            appointmentDateStr: -1,
+            appointmentTime: -1,
+            _id: -1,
+          },
+        },
+        { $skip: (page - 1) * limit },
+        { $limit: limit },
+        {
+          $project: {
+            _parsedCreatedAt: 0,
+            _fallbackDateTime: 0,
+            _effectiveSortDate: 0,
+          },
+        },
+      ]),
       Appointment.countDocuments(filter),
     ]);
 

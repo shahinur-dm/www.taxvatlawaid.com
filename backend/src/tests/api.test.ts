@@ -285,4 +285,82 @@ describe('TaxVat LawAid Backend API Integration Tests', () => {
     const afterLogout = await agent.get('/api/auth/me');
     assert.equal(afterLogout.status, 401);
   });
+
+  it('sorts admin appointments newest-first by createdAt with date/time fallback and filters', async () => {
+    const agent = request.agent(app);
+    const loginRes = await agent.post('/api/auth/login').send({
+      email: 'admin@taxvatlawaid.com',
+      password: 'StrongPass!2026',
+    });
+    assert.equal(loginRes.status, 200);
+
+    const earlierOpenDate = getNextOpenDateStr(2);
+    const laterOpenDate = getNextOpenDateStr(10);
+
+    await Appointment.deleteMany({});
+
+    // Older booking scheduled for a later date
+    await Appointment.collection.insertOne({
+      bookingReference: 'TVLA-TEST-OLDER-LATER',
+      customerName: 'Older Booking Later Date',
+      phone: '01700000001',
+      email: '',
+      serviceCategory: 'Income Tax',
+      consultationMode: 'Chamber Visit',
+      problemDescription: '',
+      appointmentDate: new Date(`${laterOpenDate}T00:00:00.000Z`),
+      appointmentDateStr: laterOpenDate,
+      appointmentTime: '06:00 PM',
+      status: 'Confirmed',
+      adminNotes: '',
+      createdAt: new Date('2026-11-01T10:00:00.000Z'),
+      updatedAt: new Date('2026-11-01T10:00:00.000Z'),
+    });
+
+    // Record missing createdAt completely -> falls back to appointmentDateStr + appointmentTime
+    await Appointment.collection.insertOne({
+      bookingReference: 'TVLA-TEST-MISSING-CREATEDAT',
+      customerName: 'Legacy Missing Timestamp',
+      phone: '01700000002',
+      email: '',
+      serviceCategory: 'VAT & Tax',
+      consultationMode: 'Video Call',
+      problemDescription: '',
+      appointmentDate: new Date('2026-11-05T00:00:00.000Z'),
+      appointmentDateStr: '2026-11-05',
+      appointmentTime: '07:00 PM',
+      status: 'Pending',
+      adminNotes: '',
+    });
+
+    // Newly submitted booking via public API on an earlier date must appear FIRST
+    const newestRes = await request(app).post('/api/appointments').send({
+      customerName: 'Newest Submitted Client',
+      phone: '01700000003',
+      serviceCategory: 'Income Tax',
+      appointmentDate: earlierOpenDate,
+      appointmentTime: '03:00 PM',
+    });
+    assert.equal(newestRes.status, 201);
+
+    const sortedList = await agent.get('/api/admin/appointments?page=1&limit=10');
+    assert.equal(sortedList.status, 200);
+    assert.equal(sortedList.body.data.length, 3);
+    assert.equal(sortedList.body.data[0].customerName, 'Newest Submitted Client');
+    assert.equal(sortedList.body.data[1].bookingReference, 'TVLA-TEST-MISSING-CREATEDAT');
+    assert.equal(sortedList.body.data[2].bookingReference, 'TVLA-TEST-OLDER-LATER');
+
+    // Search + service + status filters still preserve newest-first ordering
+    const filteredList = await agent.get('/api/admin/appointments?service=Income%20Tax');
+    assert.equal(filteredList.status, 200);
+    assert.equal(filteredList.body.data.length, 2);
+    assert.equal(filteredList.body.data[0].customerName, 'Newest Submitted Client');
+    assert.equal(filteredList.body.data[1].bookingReference, 'TVLA-TEST-OLDER-LATER');
+
+    // Pagination slice check
+    const page2 = await agent.get('/api/admin/appointments?page=2&limit=2');
+    assert.equal(page2.status, 200);
+    assert.equal(page2.body.data.length, 1);
+    assert.equal(page2.body.data[0].bookingReference, 'TVLA-TEST-OLDER-LATER');
+  });
 });
