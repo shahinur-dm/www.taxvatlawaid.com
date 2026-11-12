@@ -25,6 +25,15 @@ export const metadata: Metadata = {
   },
   description:
     'Integrated legal, income tax, VAT, customs, RJSC company compliance, intellectual property, and litigation counsel in Bangladesh. Chamber in Ramna, Dhaka.',
+  icons: {
+    icon: [
+      { url: '/images/taxvat-logo.svg', type: 'image/svg+xml' },
+      { url: '/images/taxvat-favicon-32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon.ico', sizes: '32x32 48x48' },
+    ],
+    shortcut: ['/favicon.ico'],
+    apple: [{ url: '/apple-icon.png', sizes: '180x180', type: 'image/png' }],
+  },
   keywords: [
     'TaxVat LawAid',
     'Tax Aid Law Firm',
