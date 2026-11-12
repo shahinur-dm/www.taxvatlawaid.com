@@ -1,18 +1,20 @@
 import { FALLBACK_CONTENT, FALLBACK_SERVICES, FALLBACK_SETTINGS } from './defaults';
 import { PublicSettings, ServiceItem, WebsiteContentData } from '@/types';
 
-const BACKEND_URL = process.env.BACKEND_INTERNAL_URL || 'http://localhost:5000';
-
 export async function fetchPublicSiteData(): Promise<{
   content: WebsiteContentData;
   settings: PublicSettings;
   services: ServiceItem[];
 }> {
+  const backendUrl = (process.env.BACKEND_INTERNAL_URL || 'http://localhost:5000').replace(
+    /\/+$/,
+    ''
+  );
   try {
     const [contentRes, settingsRes, servicesRes] = await Promise.all([
-      fetch(`${BACKEND_URL}/api/content`, { cache: 'no-store' }),
-      fetch(`${BACKEND_URL}/api/settings/public`, { cache: 'no-store' }),
-      fetch(`${BACKEND_URL}/api/services`, { cache: 'no-store' }),
+      fetch(`${backendUrl}/api/content`, { cache: 'no-store' }),
+      fetch(`${backendUrl}/api/settings/public`, { cache: 'no-store' }),
+      fetch(`${backendUrl}/api/services`, { cache: 'no-store' }),
     ]);
 
     const contentJson = contentRes.ok ? await contentRes.json() : null;

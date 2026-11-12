@@ -4,6 +4,10 @@ const nextConfig = {
     unoptimized: true,
   },
   async rewrites() {
+    if (process.env.VERCEL) {
+      return [];
+    }
+
     const backendUrl = process.env.BACKEND_INTERNAL_URL || 'http://localhost:5000';
     return [
       {

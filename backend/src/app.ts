@@ -11,7 +11,11 @@ import appointmentRoutes from './routes/appointmentRoutes';
 import authRoutes from './routes/authRoutes';
 import publicRoutes from './routes/publicRoutes';
 
-export function createApp() {
+export interface CreateAppOptions {
+  ensureDb?: express.RequestHandler;
+}
+
+export function createApp(options?: CreateAppOptions) {
   const app = express();
 
   app.set('trust proxy', 1);
@@ -22,10 +26,22 @@ export function createApp() {
     })
   );
 
-  const allowedOrigins = env.corsOrigin
-    .split(',')
-    .map((o) => o.trim())
-    .filter(Boolean);
+  const dynamicOrigins = [
+    process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : '',
+    process.env.VERCEL_BRANCH_URL ? `https://${process.env.VERCEL_BRANCH_URL}` : '',
+    process.env.VERCEL_PROJECT_PRODUCTION_URL
+      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+      : '',
+    'https://www-taxvatlawaid-com.vercel.app',
+  ];
+
+  const allowedOrigins = Array.from(
+    new Set(
+      [...env.corsOrigin.split(','), ...dynamicOrigins]
+        .map((o) => o.trim())
+        .filter(Boolean)
+    )
+  );
 
   app.use(
     cors({
@@ -54,6 +70,9 @@ export function createApp() {
   });
 
   app.use('/api', apiLimiter);
+  if (options?.ensureDb) {
+    app.use('/api', options.ensureDb);
+  }
   app.use('/api/auth', authRoutes);
   app.use('/api/appointments', appointmentRoutes);
   app.use('/api/admin', adminRoutes);
