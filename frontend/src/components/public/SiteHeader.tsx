@@ -17,6 +17,7 @@ import {
 import { FALLBACK_SERVICES } from '@/lib/defaults';
 import { PublicSettings, ServiceItem, WebsiteContentData } from '@/types';
 import { AnnouncementBanner } from './AnnouncementBanner';
+import { TaxAidBrand } from './TaxAidBrand';
 
 interface SiteHeaderProps {
   content: WebsiteContentData;
@@ -56,7 +57,7 @@ export function SiteHeader({
 
   const isTransparent = transparentOverHero && !scrolled;
 
-  const whatsappDigits = content.contactWhatsapp.replace(/\D/g, '');
+  const whatsappDigits = (content.contactWhatsapp || '01614446444').replace(/\D/g, '');
   const whatsappUrl = `https://wa.me/${whatsappDigits.startsWith('88') ? whatsappDigits : `88${whatsappDigits}`}`;
 
   const openDropdown = () => {
@@ -107,11 +108,11 @@ export function SiteHeader({
           </div>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 shrink-0">
             <a
-              href={`tel:${content.contactPhone}`}
+              href="tel:01614446444"
               className="inline-flex items-center gap-1.5 hover:text-champagne-300 transition-colors"
             >
               <Phone className="h-3 w-3 text-champagne-400" />
-              <span>{content.contactPhone}</span>
+              <span>01614446444 / 01343226633</span>
             </a>
             <span className="text-white/20 hidden sm:inline">|</span>
             <a
@@ -168,7 +169,7 @@ export function SiteHeader({
                   isTransparent ? 'text-ivory-200/80' : 'text-charcoal-500'
                 }`}
               >
-                Associated Practice: {content.associatedPractice}
+                Associated Practice: <TaxAidBrand darkBg={isTransparent} />
               </p>
             </div>
           </Link>
@@ -211,12 +212,12 @@ export function SiteHeader({
                 <div
                   onMouseEnter={openDropdown}
                   onMouseLeave={closeDropdown}
-                  className="absolute left-1/2 -translate-x-1/2 top-full pt-3 w-[440px] z-50"
+                  className="absolute left-1/2 -translate-x-1/2 top-full pt-3 w-[480px] z-50"
                 >
                   <div className="bg-white rounded-lg border border-ivory-300 shadow-2xl shadow-midnight-900/15 overflow-hidden text-charcoal-800">
                     <div className="px-5 py-3 bg-ivory-100 border-b border-ivory-300 flex items-center justify-between">
                       <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-midnight-900">
-                        Six Legal &amp; Regulatory Divisions
+                        20 Practice Divisions &amp; Services
                       </span>
                       <Link
                         href="/services"
@@ -226,7 +227,7 @@ export function SiteHeader({
                         <ArrowRight className="h-3 w-3" />
                       </Link>
                     </div>
-                    <div className="p-2 divide-y divide-ivory-200">
+                    <div className="p-2 divide-y divide-ivory-200 max-h-[380px] overflow-y-auto">
                       {divisions.map((svc, idx) => (
                         <Link
                           key={svc.slug}
@@ -397,11 +398,11 @@ export function SiteHeader({
                 <span>Book an Appointment</span>
               </Link>
               <a
-                href={`tel:${content.contactPhone}`}
+                href="tel:01614446444"
                 className="inline-flex items-center justify-center gap-2 bg-ivory-100 border border-ivory-300 text-midnight-900 font-semibold py-3 px-4 rounded text-sm"
               >
                 <Phone className="h-4 w-4 text-champagne-600" />
-                <span>Call {content.contactPhone}</span>
+                <span>Call 01614446444 / 01343226633</span>
               </a>
             </div>
           </div>

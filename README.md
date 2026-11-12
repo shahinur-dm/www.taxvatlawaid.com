@@ -1,6 +1,6 @@
 # TaxVat LawAid — Full-Stack Legal Consultancy Website, Appointment Booking & Admin System
 
-Production-ready full-stack web application for **TaxVat LawAid** (*Associated Practice: Tax Aid Law Firm*), Dhaka, Bangladesh.
+Production-ready full-stack web application for **TaxVat LawAid** (*Associated Practice: TaxAid*), Dhaka, Bangladesh.
 
 Built strictly with:
 - **Frontend**: Next.js (App Router), React, TypeScript, Tailwind CSS, Lucide React, React Hook Form, Zod, Axios, Sonner, Recharts

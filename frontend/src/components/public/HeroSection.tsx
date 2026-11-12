@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { ArrowDownRight, Calendar, Clock, Shield } from 'lucide-react';
 import { WebsiteContentData } from '@/types';
+import { TaxAidBrand } from './TaxAidBrand';
 
 interface HeroSectionProps {
   content: WebsiteContentData;
@@ -80,7 +81,9 @@ export function HeroSection({ content }: HeroSectionProps) {
             </div>
             <div className="inline-flex items-center gap-2">
               <Shield className="h-4 w-4 text-champagne-400 shrink-0" />
-              <span>Associated Practice: {content.associatedPractice}</span>
+              <span>
+                Associated Practice: <TaxAidBrand darkBg={true} />
+              </span>
             </div>
           </div>
         </div>

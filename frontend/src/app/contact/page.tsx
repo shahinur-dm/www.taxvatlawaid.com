@@ -11,7 +11,7 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   title: 'Contact & Dhaka Chamber',
   description:
-    'Visit TaxVat LawAid & Tax Aid Law Firm at 14/7, Eastern Mansion, Lift-14, 67/9, Pioneer Road, Ramna, Dhaka or reach us by phone, WhatsApp, or email.',
+    'Visit TaxVat LawAid & TaxAid at 14/7, Eastern Mansion, Lift-14, 67/9, Pioneer Road, Ramna, Dhaka or reach us by phone, WhatsApp, or email.',
 };
 
 export default async function ContactPage() {

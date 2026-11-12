@@ -4,7 +4,7 @@ import React from 'react';
 import { usePathname } from 'next/navigation';
 
 const WHATSAPP_URL =
-  'https://wa.me/8801715149666?text=Hello%20TaxVat%20LawAid%2C%20I%20would%20like%20to%20know%20more%20about%20your%20legal%20services.';
+  'https://wa.me/8801614446444?text=Hello%20TaxVat%20LawAid%2C%20I%20would%20like%20to%20know%20more%20about%20your%20legal%20services.';
 
 export function FloatingWhatsAppButton() {
   const pathname = usePathname();

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Award, Briefcase, Building2, Scale } from 'lucide-react';
 import { WebsiteContentData } from '@/types';
+import { TaxAidBrand } from './TaxAidBrand';
 
 interface TrustCredibilityBarProps {
   content: WebsiteContentData;
@@ -43,10 +44,10 @@ export function TrustCredibilityBar({ content }: TrustCredibilityBarProps) {
             <Building2 className="h-5 w-5 text-champagne-600 shrink-0 mt-0.5" />
             <div>
               <div className="text-[11px] font-bold uppercase tracking-[0.14em] text-champagne-700 mb-1">
-                Associated Chamber
+                Associated Practice
               </div>
-              <div className="font-serif text-lg font-semibold text-midnight-900">
-                {content.associatedPractice}
+              <div className="font-serif text-lg font-bold">
+                <TaxAidBrand />
               </div>
               <div className="text-xs text-charcoal-500 mt-0.5">Ramna, Dhaka, Bangladesh</div>
             </div>

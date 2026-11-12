@@ -84,7 +84,7 @@ describe('TaxVat LawAid Backend API Integration Tests', () => {
 
     const servicesRes = await request(app).get('/api/services');
     assert.equal(servicesRes.status, 200);
-    assert.equal(servicesRes.body.data.length, 6);
+    assert.equal(servicesRes.body.data.length, 20);
   });
 
   it('blocks Friday, Saturday, past dates, and past time slots in Asia/Dhaka', async () => {
@@ -123,7 +123,7 @@ describe('TaxVat LawAid Backend API Integration Tests', () => {
 
     const badRes = await request(app).post('/api/appointments').send({
       customerName: 'Rahim Uddin',
-      serviceCategory: 'Income Tax',
+      serviceCategory: 'eTIN/eBIN Registration',
       appointmentDate: openDate,
       appointmentTime: '03:00 PM',
     });
@@ -133,7 +133,7 @@ describe('TaxVat LawAid Backend API Integration Tests', () => {
     const friBook = await request(app).post('/api/appointments').send({
       customerName: 'Rahim Uddin',
       phone: '01711000001',
-      serviceCategory: 'Income Tax',
+      serviceCategory: 'eTIN/eBIN Registration',
       appointmentDate: friday,
       appointmentTime: '03:00 PM',
     });
@@ -143,7 +143,7 @@ describe('TaxVat LawAid Backend API Integration Tests', () => {
       request(app).post('/api/appointments').send({
         customerName: 'Customer One',
         phone: '01711000001',
-        serviceCategory: 'VAT & Tax',
+        serviceCategory: 'TAX/VAT Return & Services',
         appointmentDate: openDate,
         appointmentTime: '04:00 PM',
       }),
@@ -230,7 +230,7 @@ describe('TaxVat LawAid Backend API Integration Tests', () => {
     const rebookRes = await request(app).post('/api/appointments').send({
       customerName: 'Replacement Client',
       phone: '01711000099',
-      serviceCategory: 'Tax Return',
+      serviceCategory: 'TAX/VAT Return & Services',
       appointmentDate: appt.appointmentDateStr,
       appointmentTime: appt.appointmentTime,
     });
@@ -305,7 +305,7 @@ describe('TaxVat LawAid Backend API Integration Tests', () => {
       customerName: 'Older Booking Later Date',
       phone: '01700000001',
       email: '',
-      serviceCategory: 'Income Tax',
+      serviceCategory: 'Company Taxation',
       consultationMode: 'Chamber Visit',
       problemDescription: '',
       appointmentDate: new Date(`${laterOpenDate}T00:00:00.000Z`),
@@ -323,7 +323,7 @@ describe('TaxVat LawAid Backend API Integration Tests', () => {
       customerName: 'Legacy Missing Timestamp',
       phone: '01700000002',
       email: '',
-      serviceCategory: 'VAT & Tax',
+      serviceCategory: 'TAX/VAT Return & Services',
       consultationMode: 'Video Call',
       problemDescription: '',
       appointmentDate: new Date('2026-11-05T00:00:00.000Z'),
@@ -337,7 +337,7 @@ describe('TaxVat LawAid Backend API Integration Tests', () => {
     const newestRes = await request(app).post('/api/appointments').send({
       customerName: 'Newest Submitted Client',
       phone: '01700000003',
-      serviceCategory: 'Income Tax',
+      serviceCategory: 'Company Taxation',
       appointmentDate: earlierOpenDate,
       appointmentTime: '03:00 PM',
     });
@@ -351,7 +351,7 @@ describe('TaxVat LawAid Backend API Integration Tests', () => {
     assert.equal(sortedList.body.data[2].bookingReference, 'TVLA-TEST-OLDER-LATER');
 
     // Search + service + status filters still preserve newest-first ordering
-    const filteredList = await agent.get('/api/admin/appointments?service=Income%20Tax');
+    const filteredList = await agent.get('/api/admin/appointments?service=Company%20Taxation');
     assert.equal(filteredList.status, 200);
     assert.equal(filteredList.body.data.length, 2);
     assert.equal(filteredList.body.data[0].customerName, 'Newest Submitted Client');

@@ -35,12 +35,26 @@ const ICON_MAP: Record<string, React.ElementType> = {
 };
 
 function mapServiceToBookingCategory(slug: string): ServiceCategory {
-  if (slug.includes('income-tax')) return 'Income Tax';
-  if (slug.includes('vat')) return 'VAT & Tax';
-  if (slug.includes('company') || slug.includes('rjsc')) return 'Company Taxation';
-  if (slug.includes('investment') || slug.includes('licensing')) return 'Business Compliance';
-  if (slug.includes('litigation') || slug.includes('customs')) return 'Legal Consultancy';
-  return 'Other';
+  if (slug.includes('etin') || slug.includes('ebin')) return 'eTIN/eBIN Registration';
+  if (slug.includes('tax-vat-return')) return 'TAX/VAT Return & Services';
+  if (slug.includes('tda') || slug.includes('vds')) return 'TDA/VDS Return & Services';
+  if (slug.includes('tax-vat-compliance')) return 'TAX/VAT Compliance';
+  if (slug.includes('audit')) return 'Audit-Accounting Services';
+  if (slug.includes('company-taxation')) return 'Company Taxation';
+  if (slug.includes('rjsc-company-registration')) return 'RJSC Company Registration';
+  if (slug.includes('partnership') || slug.includes('opc')) return 'Partnership, OPCRegistration';
+  if (slug.includes('society') || slug.includes('foundation')) return 'Society-Foundation Registration';
+  if (slug.includes('club')) return 'Club Ltd. Registration';
+  if (slug.includes('trade-association')) return 'Trade Association Registration';
+  if (slug.includes('rjsc-legal-compliance')) return 'RJSC Legal Compliance';
+  if (slug.includes('irc') || slug.includes('erc') || slug.includes('bida')) return 'IRC, ERC, BIDA Registration';
+  if (slug.includes('trademark') || slug.includes('ip') || slug.includes('patent')) return 'IP>Trademark, Patent, Design';
+  if (slug.includes('appeal') || slug.includes('tribunal')) return 'TAX/VAT Appeal, Tribunal';
+  if (slug.includes('high-court') || slug.includes('writ')) return 'High Court & Writ Petition';
+  if (slug.includes('corporate-legal')) return 'Corporate Legal Consultant';
+  if (slug.includes('corporate-business')) return 'Corporate Business Compliance';
+  if (slug.includes('licence')) return 'Licences';
+  return 'Others';
 }
 
 export function PracticeAreasSection({
@@ -66,7 +80,7 @@ export function PracticeAreasSection({
                 Specialized Practice Areas
               </h2>
               <p className="text-charcoal-600 text-base sm:text-[17px] leading-relaxed">
-                Structured representation and regulatory compliance across six integrated divisions grounded in Bangladesh statutory law.
+                Structured representation and regulatory compliance across our 20 specialized practice areas grounded in Bangladesh statutory law.
               </p>
             </div>
 

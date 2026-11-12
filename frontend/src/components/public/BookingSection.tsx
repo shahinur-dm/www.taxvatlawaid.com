@@ -41,16 +41,7 @@ const bookingFormSchema = z.object({
   email: z
     .union([z.string().email('Enter a valid email address'), z.literal('')])
     .optional(),
-  serviceCategory: z.enum([
-    'Income Tax',
-    'VAT & Tax',
-    'Company Taxation',
-    'Tax Return',
-    'VAT Registration',
-    'Legal Consultancy',
-    'Business Compliance',
-    'Other',
-  ]),
+  serviceCategory: z.enum(SERVICE_CATEGORIES),
   consultationMode: z.enum(['Chamber Visit', 'Video Call', 'Phone Call']),
   appointmentDate: z
     .string()
@@ -146,6 +137,13 @@ export function BookingSection({
   const [lookupLoading, setLookupLoading] = useState(false);
   const [lookupError, setLookupError] = useState<string | null>(null);
 
+  const defaultServiceCategory = useMemo(() => {
+    if (preselectedCategory && (SERVICE_CATEGORIES as readonly string[]).includes(preselectedCategory)) {
+      return preselectedCategory as (typeof SERVICE_CATEGORIES)[number];
+    }
+    return SERVICE_CATEGORIES[0];
+  }, [preselectedCategory]);
+
   const {
     register,
     handleSubmit,
@@ -159,7 +157,7 @@ export function BookingSection({
       customerName: '',
       phone: '',
       email: '',
-      serviceCategory: preselectedCategory || 'Income Tax',
+      serviceCategory: defaultServiceCategory,
       consultationMode: 'Chamber Visit',
       appointmentDate: quickDates[0]?.dateStr || todayDhaka,
       appointmentTime: '',
@@ -168,8 +166,8 @@ export function BookingSection({
   });
 
   useEffect(() => {
-    if (preselectedCategory) {
-      setValue('serviceCategory', preselectedCategory);
+    if (preselectedCategory && (SERVICE_CATEGORIES as readonly string[]).includes(preselectedCategory)) {
+      setValue('serviceCategory', preselectedCategory as (typeof SERVICE_CATEGORIES)[number]);
       setActiveMethod('online');
     }
   }, [preselectedCategory, setValue]);
@@ -256,7 +254,7 @@ export function BookingSection({
     }
   };
 
-  const whatsappDigits = content.contactWhatsapp.replace(/\D/g, '');
+  const whatsappDigits = (content.contactWhatsapp || '01614446444').replace(/\D/g, '');
   const whatsappBase = `https://wa.me/${whatsappDigits.startsWith('88') ? whatsappDigits : `88${whatsappDigits}`}`;
 
   const buildWhatsappDispatchUrl = (slip: BookingConfirmation) => {
@@ -549,7 +547,11 @@ export function BookingSection({
                             customerName: '',
                             phone: '',
                             email: '',
-                            serviceCategory: confirmation.serviceCategory,
+                            serviceCategory: (SERVICE_CATEGORIES as readonly string[]).includes(
+                              confirmation.serviceCategory
+                            )
+                              ? (confirmation.serviceCategory as (typeof SERVICE_CATEGORIES)[number])
+                              : SERVICE_CATEGORIES[0],
                             consultationMode: 'Chamber Visit',
                             appointmentDate: quickDates[0]?.dateStr || todayDhaka,
                             appointmentTime: '',
@@ -893,7 +895,7 @@ export function BookingSection({
                       <CheckCircle2 className="h-5 w-5 text-champagne-400 shrink-0 mt-0.5" />
                       <span>
                         One click forwards your pre-formatted slip directly to our{' '}
-                        <strong className="text-white">WhatsApp ({content.contactWhatsapp})</strong> or{' '}
+                        <strong className="text-white">WhatsApp (01614446444)</strong> or{' '}
                         <strong className="text-white">Email ({content.contactEmail})</strong>.
                       </span>
                     </li>
@@ -908,10 +910,10 @@ export function BookingSection({
                   <div className="pt-4 border-t border-white/15 text-xs sm:text-sm text-ivory-200/80">
                     Need urgent statutory notice assistance? Call{' '}
                     <a
-                      href={`tel:${content.contactPhone}`}
+                      href="tel:01614446444"
                       className="font-semibold text-champagne-300 underline"
                     >
-                      {content.contactPhone}
+                      01614446444 / 01343226633
                     </a>{' '}
                     directly.
                   </div>
@@ -989,11 +991,11 @@ export function BookingSection({
                 </p>
                 <div className="flex flex-wrap gap-3 pt-2">
                   <a
-                    href={`tel:${content.contactPhone}`}
+                    href="tel:01614446444"
                     className="inline-flex items-center gap-2 bg-midnight-900 hover:bg-midnight-800 text-white font-semibold px-5 py-3 rounded text-sm"
                   >
                     <Phone className="h-4 w-4 text-champagne-400" />
-                    <span>Call {content.contactPhone}</span>
+                    <span>Call 01614446444 / 01343226633</span>
                   </a>
                   <a
                     href={`${whatsappBase}?text=${encodeURIComponent('Assalamu Alaikum, I would like to book a legal/tax consultation with TaxVat LawAid.')}`}
@@ -1002,7 +1004,7 @@ export function BookingSection({
                     className="inline-flex items-center gap-2 bg-emerald-700 hover:bg-emerald-800 text-white font-semibold px-5 py-3 rounded text-sm"
                   >
                     <MessageCircle className="h-4 w-4" />
-                    <span>WhatsApp {content.contactWhatsapp}</span>
+                    <span>WhatsApp 01614446444</span>
                   </a>
                 </div>
               </div>

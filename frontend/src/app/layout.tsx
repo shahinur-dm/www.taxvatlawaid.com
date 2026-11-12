@@ -38,7 +38,7 @@ export const metadata: Metadata = {
   },
   keywords: [
     'TaxVat LawAid',
-    'Tax Aid Law Firm',
+    'TaxAid',
     'Hossain Ahmed Khan Advocate',
     'Law Firm in Bangladesh',
     'Income Tax Lawyer Dhaka',
@@ -86,7 +86,7 @@ export default function RootLayout({
     '@context': 'https://schema.org',
     '@type': 'LegalService',
     name: 'TaxVat LawAid',
-    alternateName: 'Tax Aid Law Firm',
+    alternateName: 'TaxAid',
     url: 'https://www-taxvatlawaid-com.vercel.app',
     logo: 'https://www-taxvatlawaid-com.vercel.app/images/taxvat-logo.svg',
     description:

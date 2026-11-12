@@ -3,13 +3,14 @@ import Link from 'next/link';
 import { Calendar, CheckCircle2, MessageCircle, Phone } from 'lucide-react';
 import { WebsiteContentData } from '@/types';
 import { RevealOnScroll } from './RevealOnScroll';
+import { TaxAidBrand } from './TaxAidBrand';
 
 interface LeadCounselCardProps {
   content: WebsiteContentData;
 }
 
 export function LeadCounselCard({ content }: LeadCounselCardProps) {
-  const whatsappDigits = content.contactWhatsapp.replace(/\D/g, '');
+  const whatsappDigits = (content.contactWhatsapp || '01614446444').replace(/\D/g, '');
   const whatsappUrl = `https://wa.me/${whatsappDigits.startsWith('88') ? whatsappDigits : `88${whatsappDigits}`}`;
 
   const focusMandates = [
@@ -45,8 +46,9 @@ export function LeadCounselCard({ content }: LeadCounselCardProps) {
                     <div className="font-serif text-xl font-semibold text-white">
                       {content.leadCounselName}
                     </div>
-                    <div className="text-xs text-ivory-200/85 mt-0.5">
-                      {content.leadCounselTitle} · {content.associatedPractice}
+                    <div className="text-xs text-ivory-200/85 mt-0.5 flex items-center gap-1.5">
+                      <span>{content.leadCounselTitle} ·</span>
+                      <TaxAidBrand darkBg={true} />
                     </div>
                   </div>
                 </div>
@@ -109,11 +111,11 @@ export function LeadCounselCard({ content }: LeadCounselCardProps) {
                   <span>Request Consultation</span>
                 </Link>
                 <a
-                  href={`tel:${content.contactPhone}`}
+                  href="tel:01614446444"
                   className="inline-flex items-center justify-center gap-2 bg-ivory-100 hover:bg-ivory-200 border border-ivory-300 text-midnight-900 font-semibold px-5 py-3.5 rounded text-sm transition-colors"
                 >
                   <Phone className="h-4 w-4 text-champagne-600" />
-                  <span>Call: {content.contactPhone}</span>
+                  <span>Call: 01614446444 / 01343226633</span>
                 </a>
                 <a
                   href={whatsappUrl}

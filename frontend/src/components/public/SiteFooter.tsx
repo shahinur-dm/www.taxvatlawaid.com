@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Calendar, Clock, Globe, Mail, MapPin, Phone } from 'lucide-react';
 import { FALLBACK_SERVICES } from '@/lib/defaults';
 import { ServiceItem, WebsiteContentData } from '@/types';
+import { TaxAidBrand } from './TaxAidBrand';
 
 interface SiteFooterProps {
   content: WebsiteContentData;
@@ -33,7 +34,7 @@ export function SiteFooter({ content, services }: SiteFooterProps) {
                   <span className="text-white">LawAid</span>
                 </div>
                 <p className="text-xs font-medium text-champagne-400">
-                  Associated Practice: {content.associatedPractice}
+                  Associated Practice: <TaxAidBrand darkBg={true} />
                 </p>
               </div>
             </Link>
@@ -133,12 +134,12 @@ export function SiteFooter({ content, services }: SiteFooterProps) {
               <li className="flex items-center gap-2.5">
                 <Phone className="h-4 w-4 text-champagne-400 shrink-0" />
                 <span>
-                  <a href={`tel:${content.contactPhone}`} className="hover:text-white">
-                    {content.contactPhone}
+                  <a href="tel:01614446444" className="hover:text-white">
+                    01614446444
                   </a>{' '}
                   /{' '}
-                  <a href={`tel:${content.contactWhatsapp}`} className="hover:text-white">
-                    {content.contactWhatsapp}
+                  <a href="tel:01343226633" className="hover:text-white">
+                    01343226633
                   </a>
                 </span>
               </li>

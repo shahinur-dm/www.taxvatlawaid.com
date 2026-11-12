@@ -1,23 +1,27 @@
-export type ServiceCategory =
-  | 'Income Tax'
-  | 'VAT & Tax'
-  | 'Company Taxation'
-  | 'Tax Return'
-  | 'VAT Registration'
-  | 'Legal Consultancy'
-  | 'Business Compliance'
-  | 'Other';
-
-export const SERVICE_CATEGORIES: ServiceCategory[] = [
-  'Income Tax',
-  'VAT & Tax',
+export const SERVICE_CATEGORIES = [
+  'eTIN/eBIN Registration',
+  'TAX/VAT Return & Services',
+  'TDA/VDS Return & Services',
+  'TAX/VAT Compliance',
+  'Audit-Accounting Services',
   'Company Taxation',
-  'Tax Return',
-  'VAT Registration',
-  'Legal Consultancy',
-  'Business Compliance',
-  'Other',
-];
+  'RJSC Company Registration',
+  'Partnership, OPCRegistration',
+  'Society-Foundation Registration',
+  'Club Ltd. Registration',
+  'Trade Association Registration',
+  'RJSC Legal Compliance',
+  'IRC, ERC, BIDA Registration',
+  'IP>Trademark, Patent, Design',
+  'TAX/VAT Appeal, Tribunal',
+  'High Court & Writ Petition',
+  'Corporate Legal Consultant',
+  'Corporate Business Compliance',
+  'Licences',
+  'Others',
+] as const;
+
+export type ServiceCategory = (typeof SERVICE_CATEGORIES)[number] | string;
 
 export type ConsultationMode = 'Chamber Visit' | 'Video Call' | 'Phone Call';
 

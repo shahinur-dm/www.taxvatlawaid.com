@@ -75,7 +75,7 @@ const websiteContentSchema = new Schema<IWebsiteContent>(
     associatedPractice: {
       type: String,
       trim: true,
-      default: 'Tax Aid Law Firm',
+      default: 'TaxAid',
     },
     heroBadge: {
       type: String,
@@ -179,8 +179,8 @@ const websiteContentSchema = new Schema<IWebsiteContent>(
       ],
       default: [],
     },
-    contactPhone: { type: String, trim: true, default: '01614446444' },
-    contactWhatsapp: { type: String, trim: true, default: '01715149666' },
+    contactPhone: { type: String, trim: true, default: '01614446444 / 01343226633' },
+    contactWhatsapp: { type: String, trim: true, default: '01614446444' },
     contactEmail: { type: String, trim: true, default: 'taxvatlawaid@gmail.com' },
     officeAddress: {
       type: String,
@@ -209,7 +209,7 @@ const websiteContentSchema = new Schema<IWebsiteContent>(
       facebook: { type: String, trim: true, default: '' },
       linkedin: { type: String, trim: true, default: '' },
       youtube: { type: String, trim: true, default: '' },
-      whatsapp: { type: String, trim: true, default: 'https://wa.me/8801715149666' },
+      whatsapp: { type: String, trim: true, default: 'https://wa.me/8801614446444' },
     },
   },
   {

@@ -17,6 +17,7 @@ import {
 import { api, extractErrorMessage } from '@/lib/api';
 import { PublicSettings, WebsiteContentData } from '@/types';
 import { RevealOnScroll } from './RevealOnScroll';
+import { TaxAidBrand } from './TaxAidBrand';
 
 interface ContactSectionProps {
   content: WebsiteContentData;
@@ -93,7 +94,7 @@ export function ContactSection({ content, settings }: ContactSectionProps) {
                 </h2>
                 <p className="text-sm sm:text-base text-charcoal-600 leading-relaxed">
                   {content.brandName} · Associated Practice:{' '}
-                  <strong className="text-midnight-900">{content.associatedPractice}</strong>. Reach us in Ramna, Dhaka or schedule an online consultation.
+                  <TaxAidBrand />. Reach us in Ramna, Dhaka or schedule an online consultation.
                 </p>
               </div>
 
@@ -124,12 +125,12 @@ export function ContactSection({ content, settings }: ContactSectionProps) {
                     <span>Direct Telephone &amp; WhatsApp</span>
                   </div>
                   <p className="text-charcoal-600 text-xs sm:text-[13px] leading-relaxed">
-                    <a href={`tel:${content.contactPhone}`} className="hover:text-midnight-900 underline decoration-ivory-300">
-                      Call: {content.contactPhone}
+                    <a href="tel:01614446444" className="hover:text-midnight-900 underline decoration-ivory-300">
+                      Call: 01614446444 / 01343226633
                     </a>
                     <br />
-                    <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="hover:text-midnight-900 underline decoration-ivory-300">
-                      WhatsApp: {content.contactWhatsapp}
+                    <a href="https://wa.me/8801614446444" target="_blank" rel="noopener noreferrer" className="hover:text-midnight-900 underline decoration-ivory-300">
+                      WhatsApp: 01614446444
                     </a>
                   </p>
                 </div>

@@ -1,14 +1,26 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 export const SERVICE_CATEGORIES = [
-  'Income Tax',
-  'VAT & Tax',
+  'eTIN/eBIN Registration',
+  'TAX/VAT Return & Services',
+  'TDA/VDS Return & Services',
+  'TAX/VAT Compliance',
+  'Audit-Accounting Services',
   'Company Taxation',
-  'Tax Return',
-  'VAT Registration',
-  'Legal Consultancy',
-  'Business Compliance',
-  'Other',
+  'RJSC Company Registration',
+  'Partnership, OPCRegistration',
+  'Society-Foundation Registration',
+  'Club Ltd. Registration',
+  'Trade Association Registration',
+  'RJSC Legal Compliance',
+  'IRC, ERC, BIDA Registration',
+  'IP>Trademark, Patent, Design',
+  'TAX/VAT Appeal, Tribunal',
+  'High Court & Writ Petition',
+  'Corporate Legal Consultant',
+  'Corporate Business Compliance',
+  'Licences',
+  'Others',
 ] as const;
 
 export const CONSULTATION_MODES = ['Chamber Visit', 'Video Call', 'Phone Call'] as const;
@@ -76,10 +88,7 @@ const appointmentSchema = new Schema<IAppointment>(
     serviceCategory: {
       type: String,
       required: [true, 'Service category is required'],
-      enum: {
-        values: SERVICE_CATEGORIES,
-        message: 'Invalid service category',
-      },
+      trim: true,
       index: true,
     },
     consultationMode: {

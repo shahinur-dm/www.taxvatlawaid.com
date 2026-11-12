@@ -16,7 +16,7 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   title: 'About Us & Lead Counsel',
   description:
-    'Meet Lead Counsel Hossain Ahmed (Khan) and explore TaxVat LawAid (Associated Practice: Tax Aid Law Firm), our integrated legal model, vision, mission, and six-step client process.',
+    'Meet Lead Counsel Hossain Ahmed (Khan) and explore TaxVat LawAid (Associated Practice: TaxAid), our integrated legal model, vision, mission, and six-step client process.',
 };
 
 export default async function AboutPage() {
