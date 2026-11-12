@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240" role="img" aria-label="TaxVat LawAid Logo">
+  <!-- Outer Red Octagon -->
+  <polygon points="120,8 198,42 232,120 198,198 120,232 42,198 8,120 42,42" fill="#ffffff" stroke="#e11d2a" stroke-width="5" stroke-linejoin="round"/>
+  <!-- Inner Navy Octagon -->
+  <polygon points="120,19 190,49 221,120 190,190 120,221 49,190 19,120 49,49" fill="none" stroke="#1e2259" stroke-width="4" stroke-linejoin="round"/>
+  <!-- Scales of Justice (Navy) -->
+  <g fill="#1e2259" stroke="#1e2259" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Top pediment -->
+    <polygon points="120,38 92,48 148,48" stroke-width="1"/>
+    <!-- Pillar -->
+    <path d="M113,52 L127,52 L125,96 L115,96 Z" />
+    <!-- Base -->
+    <rect x="98" y="98" width="44" height="4" rx="1"/>
+    <rect x="92" y="104" width="56" height="4" rx="1"/>
+    <!-- Beam -->
+    <line x1="72" y1="53" x2="168" y2="53" stroke-width="3.5"/>
+    <!-- Left Scale -->
+    <line x1="78" y1="53" x2="62" y2="85" stroke-width="2.2"/>
+    <line x1="78" y1="53" x2="94" y2="85" stroke-width="2.2"/>
+    <path d="M58,85 Q78,99 98,85 Z" />
+    <!-- Right Scale -->
+    <line x1="162" y1="53" x2="146" y2="85" stroke-width="2.2"/>
+    <line x1="162" y1="53" x2="178" y2="85" stroke-width="2.2"/>
+    <path d="M142,85 Q162,99 182,85 Z" />
+  </g>
+  <!-- Tax (Red) & Vat (Green) -->
+  <text x="120" y="149" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-weight="900" font-size="38" letter-spacing="-0.5">
+    <tspan fill="#e11d2a">Tax</tspan><tspan fill="#34b349">Vat</tspan>
+  </text>
+  <!-- LawAid (Navy) -->
+  <text x="120" y="182" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-weight="900" font-size="31" fill="#1e2259" letter-spacing="-0.5">LawAid</text>
+  <!-- Red dot on i -->
+  <circle cx="151.5" cy="159" r="3" fill="#e11d2a"/>
+</svg>
+
