@@ -2,10 +2,9 @@
   "name": "taxvat-lawaid-backend",
   "version": "1.0.0",
   "private": true,
-  "main": "dist/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsc -p tsconfig.json",
+    "compile": "tsc -p tsconfig.json",
     "start": "node dist/server.js",
     "seed": "tsx src/scripts/seed.ts",
     "test": "tsx --test src/tests/api.test.ts"
